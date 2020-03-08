@@ -80,8 +80,6 @@ router.post('/edit', (req, res) => {
                     if (err) {
                         throw err;
                     }
-                    console.log('myLog user', user);
-                    console.log('myLog message', message);
                     const newMessage = {
                         messageId: message.messageId,
                         content: message.content,
