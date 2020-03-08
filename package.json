@@ -1,0 +1,17 @@
+{
+  "name": "avochat-b",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.2"
+  },
+  "scripts": {
+    "goserv": "nodemon ./api/app.js",
+    "sendServer": "scp -r ./api/* victor@80.87.201.216:/var/www/chat.leyrusdev.ru/api"
+  }
+}
