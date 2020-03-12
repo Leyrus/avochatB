@@ -7,6 +7,9 @@ const router = Router();
 const con = require('./');
 
 router.post('/get', (req, res) => {
+
+    const a = con.query(getMessages(req.body.chatId))
+
     con.query(getMessages(req.body.chatId), (err, messages) => {
         con.query(getUsersByChatId(req.body.chatId), (err, users) => {
             if (err) {
