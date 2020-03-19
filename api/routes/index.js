@@ -1,19 +1,15 @@
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
+const bluebird = require('bluebird');
 
-const devMode = true;
+const devMode = false;
 const con = mysql.createConnection({
     host: 'localhost',
     port: devMode ? 3307 : 3306,
     user: devMode ? 'root' : 'leyrus',
     password: devMode ? '' : '55667788',
     database: 'avochat',
+    Promise: bluebird,
 });
-
-con.connect(function (err) {
-    if (err) {
-        throw err;
-    }
-    console.debug('Connected DB!');
-});
+global.mysqlCon
 
 module.exports = con;
