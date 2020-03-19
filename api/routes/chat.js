@@ -5,87 +5,75 @@ const { createChat, deleteChat, addUserToChat, getChats,
 
 const router = Router();
 
-const con = require('./');
+const connection = require('./');
 
-router.post('/create', (req, res) => {
-    const { name, userId } = req.body;
+(async() => {
+    const con = await connection;
+    router.post('/create', async (req, res) => {
+        const { name, userId } = req.body;
 
-    con.query(createChat(name, userId), (err) => {
-        if (err) {
-            throw err;
+        try {
+            await con.query(createChat(name, userId));
+            res.send({ name, userId, ok: true });
+        } catch (error) {
+            console.error(error)
+            res.json({ ok: false, errorMessage: error.message});
         }
-
-        res.send({ name, userId, ok: true });
     });
-});
 
-router.post('/delete', (req, res) => {
-    const { chatId } = req.body;
+    router.post('/delete', async (req, res) => {
+        const { chatId } = req.body;
 
-    con.query(deleteChat(chatId), (err) => {
-        if (err) {
-            throw err;
+        try {
+            await con.query(deleteChat(chatId));
+            res.send({ chatId, ok: true });
+        } catch (error) {
+            console.error(error)
+            res.json({ ok: false, errorMessage: error.message});
         }
-
-        res.send({ chatId, ok: true });
     });
-});
 
-router.post('/user/add', (req, res) => {
-    const { login, chatId } = req.body;
+    router.post('/user/add', async (req, res) => {
+        const { login, chatId } = req.body;
 
-    con.query(getUserByLogin(login), (err, [user]) => {
-        if(!user) {
-            return res.send({ok: false, errorMessage: 'User not found'});
-        }
+        try {
+            const [[user]] = await con.query(getUserByLogin(login));
 
-        con.query(getChats(user.userId), (err, chatResult) => {
-            if (err) {
-                throw err;
+            if(!user) {
+                return res.send({ok: false, errorMessage: 'User not found'});
             }
-            const alreadyHasChat = chatResult.some(chat => chat.chatId === chatId)
+            const [chats] = await con.query(getChats(user.userId)); 
+            const alreadyHasChat = chats.some(chat => chat.chatId === chatId)
             if (alreadyHasChat) {
                 return res.send({ok: false, errorMessage: 'User alredy has this chat'});
             }
-            con.query(addUserToChat(user.userId, chatId), (err) => {
-                if (err) {
-                    throw err;
-                }
-                con.query(getChats(user.userId), (err, newChats) => {
-                    if (err) {
-                        throw err;
-                    }
-                    res.send({ ok: true, chat: newChats.filter(chat => chat.chatId === chatId)[0] });
-                });
-            });
-        });
+            await con.query(addUserToChat(user.userId, chatId)); 
+
+            res.send({ ok: true });
+            
+        } catch (error) {
+            console.error(error)
+            res.json({ ok: false, errorMessage: error.message});
+        }
     });
 
-});
+    router.post('/user/delete', async (req, res) => {
+        const { login, chatId } = req.body;
 
-router.post('/user/delete', (req, res) => {
-    const { login, chatId } = req.body;
+        try {
+            const [[user]] = await con.query(getUserByLogin(login));
 
-    con.query(getUserByLogin(login), (err, [user]) => {
-        if (err) {
-            throw err;
-        }
-        if(!user) {
-            return res.send({ok: false, errorMessage: 'User not found'});
-        }
-        con.query(deleteUserFromChat(user.userId, chatId), (err) => {
-            if (err) {
-                throw err;
+            if(!user) {
+                return res.send({ok: false, errorMessage: 'User not found'});
             }
+            await con.query(deleteUserFromChat(user.userId, chatId));
 
-            con.query(getChats(user.userId), (err, chatResult) => {
-                if (err) {
-                    throw err;
-                }
-                res.send({ ok: true });
-            });
-        });
-    })
-});
+            res.send({ ok: true, chatId });
+        } catch (error) {
+            console.error(error)
+            res.json({ ok: false, errorMessage: error.message});
+        }
+    });
+})()
 
 module.exports = router;

@@ -1,104 +1,70 @@
 const { Router } = require('express');
-const { getMessages, deleteMessage, sendMessage,
+const { getMessages, deleteMessage, sendMessage, getNewMessage,
     editMessage, getUsersByChatId, getMessageById, getUserById } = require('../db/mysql');
+
+const { createMessage } = require('../utils');
 
 const router = Router();
 
-const con = require('./');
+const connection = require('./');
 
-router.post('/get', (req, res) => {
-
-    const a = con.query(getMessages(req.body.chatId))
-
-    con.query(getMessages(req.body.chatId), (err, messages) => {
-        con.query(getUsersByChatId(req.body.chatId), (err, users) => {
-            if (err) {
-                throw err;
-            }
+(async() => {
+    const con = await connection;
+    router.post('/get', async (req, res) => {
+        const { chatId } = req.body;
+        try {
+            const [messages] = await con.query(getMessages(chatId))
+            const [users] = await con.query(getUsersByChatId(chatId));
             const fullMessages = messages.map(message => {
                 const user = users.find(user => user.user_id === message.userId);
-
-                return ({
-                    messageId: message.messageId,
-                    content: message.content,
-                    dateCreate: message.dateCreate,
-                    dateChange: message.dateChange,
-                    author: {
-                        userId: message.userId,
-                        name: user.name,
-                        login: user.login,
-                    },
-                });
+                return createMessage(message, user)
             });
-
-            res.json({ messages: fullMessages });
-        });
+            res.json({ ok: true, messages: fullMessages });
+            
+        } catch (error) {
+            console.error(error)
+            res.json({ ok: false, errorMessage: error.message});
+        }
     });
-});
 
-router.post('/delete', (req, res) => {
-    const { messageId } = req.body;
+    router.post('/delete', async (req, res) => {
+        const { messageId } = req.body;
 
-    con.query(deleteMessage(messageId), err => {
-            if (err) {
-                throw err;
-            }
-            con.query(getMessages(), (err, messages) => {
-                if (err) {
-                    throw err;
-                }
-                res.json({ messages });
-            });
+        try {
+            await con.query(deleteMessage(messageId))
+
+            res.json({ ok: true });
+        } catch (error) {
+            res.json({ ok: false, errorMessage: error.message});
+        }
     });
-});
 
-router.post('/send', (req, res) => {
+    router.post('/send', async (req, res) => {
         const { userId, chatId, message } = req.body;
 
-        con.query(sendMessage(userId, chatId, message), err => {
-            if (err) {
-                throw err;
-            }
-            con.query(getMessages(), (err, messages) => {
-                if (err) {
-                    throw err;
-                }
-                res.json({ messages });
-            });
-        });
-});
+        try {
+            const time = Date.now();
+            await con.query(sendMessage(userId, chatId, message, time));
+            const [newMessage] = await con.query(getNewMessage(userId, chatId, time));
 
-router.post('/edit', (req, res) => {
+            res.json({ ok: true, message: newMessage })
+        } catch (error) {
+            res.json({ ok: false, errorMessage: error.message});
+        }
+    });
+
+    router.post('/edit', async(req, res) => {
         const { messageId, content } = req.body;
 
-        con.query(editMessage(messageId, content, new Date().getTime()), err => {
-            if (err) {
-                throw err;
-            }
-            con.query(getMessageById(messageId), (err, [message]) => {
-                if (err) {
-                    throw err;
-                }
-                con.query(getUserById(message.userId), (err, [user]) => {
-                    if (err) {
-                        throw err;
-                    }
-                    const newMessage = {
-                        messageId: message.messageId,
-                        content: message.content,
-                        dateCreate: message.dateCreate,
-                        dateChange: message.dateChange,
-                        author: {
-                            userId: message.userId,
-                            name: user.name,
-                            login: user.login,
-                        },
-                    };
-
-                    res.send({ message: newMessage });
-                });
-            });
-        });
-});
+        try {
+            await con.query(editMessage(messageId, content, Date.now()));
+            const [[message]] = await con.query(getMessageById(messageId));
+            const [[user]] = await con.query(getUserById(message.userId));
+            res.send({ ok: true, message: createMessage(message, user) });
+        } catch (error) {
+            res.json({ ok: false, errorMessage: error.message});
+        }
+    });
+})()
 
 module.exports = router;

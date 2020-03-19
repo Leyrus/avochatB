@@ -19,9 +19,9 @@ const getUserById = userId => `SELECT
 FROM users WHERE user_id ='${userId}'`;
 
 /* messages */
-const sendMessage = (userId, chatId, message) => `
+const sendMessage = (userId, chatId, message, time) => `
     INSERT INTO messages(chat_id, user_id, content, date_create) 
-    VALUES('${chatId}', '${userId}', '${message}', '${Date.now()}');`;
+    VALUES('${chatId}', '${userId}', '${message}', '${time}');`;
 
 const getMessages = (chatId) => `SELECT
     message_id AS messageId, user_id as userId, content, date_create as dateCreate, date_change as dateChange
@@ -30,6 +30,11 @@ const getMessages = (chatId) => `SELECT
 const getMessageById = (messageId) => `SELECT
     message_id AS messageId, user_id as userId, content, date_create as dateCreate, date_change as dateChange
     FROM messages WHERE  messages.message_id = '${messageId}'`;
+
+const getNewMessage = (userId, chatId, time) => `SELECT
+    message_id AS messageId, user_id as userId, content, date_create as dateCreate, date_change as dateChange
+    FROM messages WHERE chat_id = '${chatId}' AND user_id = '${userId}' AND date_create = ${time}
+`
 
 const deleteMessage = (messageId) => `DELETE from messages WHERE message_id = ${messageId}`;
 
@@ -65,6 +70,7 @@ module.exports = {
     sendMessage,
     deleteMessage,
     editMessage,
+    getNewMessage,
     getMessages,
     getMessageById,
     addUserToChat,
