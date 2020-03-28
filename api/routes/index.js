@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 const bluebird = require('bluebird');
 
-const devMode = process.env.devMode === 'production' || false;
+const devMode = process.env.devMode !== 'production' || true;
 const con = mysql.createConnection({
     host: 'localhost',
     port: devMode ? 3307 : 3306,

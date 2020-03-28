@@ -34,11 +34,10 @@ const connection = require('./');
             const [[newUser]] = await con.query(getUserByLogin(login)); 
             const [chats] = await con.query(getChats(newUser.userId)); 
             delete newUser.password,
-            res.json({ ok: true, user: createUserWithChats(newUser, chats) });
-            
+            res.json({ ok: true, isAuth: true, ...createUserWithChats(newUser, chats) });
         } catch (error) {
             console.error(error)
-            res.json({ ok: false, errorMessage: error.message});
+            res.json({ ok: false, isAuth: false, errorMessage: error.message});
         }
     });
 
@@ -56,17 +55,18 @@ const connection = require('./');
             if (user.login === login && user.password === password) {
                 const [chats] = await con.query(getChats(user.userId));
                 delete user.password,
-                res.json({ ok: true, user: createUserWithChats(user, chats)} );
+                res.json({ ok: true, isAuth: true, ...createUserWithChats(user, chats)} );
             } else {
                 return res.json({ 
                     ok: false,
-                    isAuth: false, errorMessage: 'Invalid login or password!',
+                    isAuth: false,
+                    errorMessage: 'Invalid login or password!',
                 });
             }
             
         } catch (error) {
             console.error(error)
-            res.json({ ok: false, errorMessage: error.message});
+            res.json({ ok: false, isAuth: false, errorMessage: error.message});
         }
     });
 })()
