@@ -1,3 +1,4 @@
+const { get } = require('lodash');
 const createMessage = (message, user) => ({
     messageId: message.messageId,
     content: message.content,
@@ -5,13 +6,12 @@ const createMessage = (message, user) => ({
     dateChange: message.dateChange,
     author: {
         userId: message.userId,
-        name: user.name,
-        login: user.login,
+        name: get(user, 'name', 'Deleted user'),
+        login:  get(user, 'login', 'Deleted user'),
     },
 })
 const createUser = (user, chats) => ({
     ...user,
-    isAuth: true,
     chats,
 })
 
