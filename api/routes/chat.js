@@ -1,7 +1,7 @@
 
 const { Router } = require('express');
-const { createChat, deleteChat, addUserToChat, getChats,
-     deleteUserFromChat, getUserByLogin } = require('../db/mysql');
+const { createChat, deleteChat, addUserToChat, getChats, deleteAllUsersFromChat,
+     deleteUserFromChat, getUserByLogin, getChatById } = require('../db/mysql');
 
 const router = Router();
 
@@ -10,11 +10,15 @@ const connection = require('./');
 (async() => {
     const con = await connection;
     router.post('/create', async (req, res) => {
-        const { name, userId } = req.body;
+        const { name, login } = req.body;
 
         try {
-            await con.query(createChat(name, userId));
-            res.send({ name, userId, ok: true });
+            const [[user]] = await con.query(getUserByLogin(login));
+
+            const [{insertId}] = await con.query(createChat(name, user.userId));
+            await con.query(addUserToChat(user.userId, insertId));
+            const [[chat]] = await con.query(getChatById(insertId))
+            res.send({ ok: true, chat })
         } catch (error) {
             console.error(error)
             res.json({ ok: false, errorMessage: error.message});
@@ -25,6 +29,7 @@ const connection = require('./');
         const { chatId } = req.body;
 
         try {
+            await con.query(deleteAllUsersFromChat(chatId));
             await con.query(deleteChat(chatId));
             res.send({ chatId, ok: true });
         } catch (error) {
