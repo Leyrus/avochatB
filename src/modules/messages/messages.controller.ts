@@ -6,22 +6,22 @@ import { IDeleteMessagesDTO, IEditMessagesDTO, IGetMessagesDTO, ISendMessagesDTO
 export class MessagesController {
     constructor(private messagesService: MessagesService) {}
 
-    @Post('get')
+    @Post('getMessages')
     getMessage(@Body() body: IGetMessagesDTO) {
         return this.messagesService.getMessages(body);
     }
 
-    @Post('send')
+    @Post('sendMessage')
     sendMessage(@Body() body: ISendMessagesDTO) {
         return this.messagesService.sendMessage(body);
     }
 
-    @Post('delete')
+    @Post('deleteMessage')
     deleteMessage(@Body() body: IDeleteMessagesDTO) {
         return this.messagesService.deleteMessage(body);
     }
 
-    @Post('edit')
+    @Post('editMessage')
     editMessage(@Body() body: IEditMessagesDTO) {
         return this.messagesService.editMessage(body);
     }

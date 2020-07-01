@@ -16,12 +16,12 @@ export class ChatController {
         return this.chatService.deleteChat(body);
     }
 
-    @Post('addUser')
+    @Post('addUserToChat')
     addUser(@Body() body: IAddUserDTO) {
         return this.chatService.addUser(body);
     }
 
-    @Post('deleteUser')
+    @Post('deleteUserFromChat')
     deleteUser(@Body() body: IDeleteUserDTO) {
         return this.chatService.deleteUser(body);
     }

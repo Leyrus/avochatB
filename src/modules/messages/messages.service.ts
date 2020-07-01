@@ -5,6 +5,8 @@ import { Message } from '../../entities/messages.entity';
 import { User } from '../../entities/user.entity';
 import { createMessage } from '../../utils/message';
 import { ResultOutput } from '../../utils/response';
+import { IDeleteMessagesDTO, IEditMessagesDTO, IGetMessagesDTO, ISendMessagesDTO } from './messages.interface';
+import { Crypto } from '../../utils/crypto';
 
 @Injectable()
 export class MessagesService {
@@ -15,7 +17,7 @@ export class MessagesService {
         private usersRepository: Repository<User>
     ) {}
 
-    async getMessages(body) {
+    async getMessages(body: IGetMessagesDTO) {
         const users = await this.usersRepository.find({ relations: ['chats'] });
         const chatUsers = users
             .filter(user => user.chats.find(chat => chat.chatId === body.chatId));
@@ -29,30 +31,34 @@ export class MessagesService {
         return ResultOutput.success(fullMessages);
     }
 
-    async sendMessage(body) {
+    async sendMessage(body: ISendMessagesDTO) {
         const user = await this.usersRepository.findOne({ login: body.login });
 
         const message = await this.messagesRepository
             .save({
                 userId: user.userId,
                 chatId: body.chatId,
-                message: body.message,
+                message: Crypto.encrypt(body.message),
                 dateCreate: new Date(),
                 dateChange: null,
             });
 
-        return ResultOutput.success(message);
+        return ResultOutput.success(createMessage(message, user));
     }
 
-    async deleteMessage(body) {
+    async deleteMessage(body: IDeleteMessagesDTO) {
         await this.messagesRepository.delete(body.messageId);
 
         return ResultOutput.success({ deletedMessageId: body.messageId });
     }
 
-    async editMessage(body) {
+    async editMessage(body: IEditMessagesDTO) {
         await this.messagesRepository
-            .update({ messageId: body.messageId }, { ...body, dateChange: new Date() });
+            .update({ messageId: body.messageId }, {
+                ...body,
+                message: Crypto.encrypt(body.message),
+                dateChange: new Date(),
+            });
         const message = await this.messagesRepository
             .findOne({ messageId: body.messageId });
         const user = await this.usersRepository.findOne({ userId: message.userId });

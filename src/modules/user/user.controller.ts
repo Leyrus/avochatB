@@ -6,12 +6,12 @@ import { INewUserDTO, IUserDTO } from './user.interface';
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @Post('get')
+    @Post('getUser')
     findUser(@Body() body: IUserDTO) {
         return this.userService.findUser(body);
     }
 
-    @Post('create')
+    @Post('createUser')
     createUser(@Body() body: INewUserDTO) {
         return this.userService.createUser(body);
     };

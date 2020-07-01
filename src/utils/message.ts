@@ -1,9 +1,10 @@
 import { User } from '../entities/user.entity';
 import { Message } from '../entities/messages.entity';
+import { Crypto } from './crypto';
 
 export const createMessage = (message: Message, user: User) => ({
     messageId: message.messageId,
-    message: message.message,
+    message: Crypto.decrypt(message.message),
     dateCreate: message.dateCreate,
     dateChange: message.dateChange,
     author: {
