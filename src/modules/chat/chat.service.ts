@@ -38,7 +38,7 @@ export class ChatService {
             .where('chatId = :chatId', { chatId: body.chatId })
             .execute();
 
-return ResultOutput.success({ deletedChatId: body.chatId });
+        return ResultOutput.success({ deletedChatId: body.chatId });
     }
 
     async addUser(body: IAddUserDTO) {
