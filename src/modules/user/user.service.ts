@@ -45,6 +45,8 @@ export class UserService {
                 password: await bcrypt.hash(body.password1, 10),
             });
 
-        return ResultOutput.success(newUser);
+        delete newUser.password;
+
+        return ResultOutput.success({ ...newUser, chats: [] });
     }
 }
