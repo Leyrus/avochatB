@@ -8,7 +8,6 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
-import { IDeleteMessagesDTO, IEditMessagesDTO, ISendMessagesDTO } from './messages.interface';
 
 @WebSocketGateway(4001)
 export class MessagesGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -19,19 +18,19 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     @SubscribeMessage('sendMessage')
     sendMessage(client: Socket, payload: any): void {
-        this.logger.log(`send ${payload}`);
+        this.logger.log(`send ${JSON.stringify(payload)}`);
         this.server.emit('sendMessage', { body: payload });
     }
 
     @SubscribeMessage('editMessage')
     editMessage(client: Socket, payload: any): void {
-        this.logger.log(`edit ${payload}`);
+        this.logger.log(`edit ${JSON.stringify(payload)}`);
         this.server.emit('editMessage', { body: payload });
     }
 
     @SubscribeMessage('deleteMessage')
     deleteMessage(client: Socket, payload: any): void {
-        this.logger.log(`delete ${payload}`);
+        this.logger.log(`delete ${JSON.stringify(payload)}`);
         this.server.emit('deleteMessage', { body: payload });
     }
 

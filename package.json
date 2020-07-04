@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "publish": "scp -r dist/* victor@leyrusdev.ru:/var/www/chat.leyrusdev.ru/app/",
+    "publish": "nest build && scp -r dist/* victor@leyrusdev.ru:/var/www/chat.leyrusdev.ru/app/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
