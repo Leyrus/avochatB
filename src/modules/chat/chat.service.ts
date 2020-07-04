@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chat } from '../../entities/chat.entity';
@@ -15,6 +15,8 @@ export class ChatService {
         private usersRepository: Repository<User>
     ) {}
 
+    private logger: Logger = new Logger('ChatService');
+
     async createChat(body: ICreateChatDTO) {
         const user = await this.usersRepository.findOne({
             login: body.login,
@@ -27,6 +29,8 @@ export class ChatService {
             chats: [...user.chats, newChat],
         });
 
+        this.logger.log(`newChat: ${JSON.stringify(newChat)}`);
+
         return ResultOutput.success(newChat);
     }
 
@@ -37,6 +41,8 @@ export class ChatService {
             .from(Chat)
             .where('chatId = :chatId', { chatId: body.chatId })
             .execute();
+
+        this.logger.log(`deletedChatId: ${body.chatId}`);
 
         return ResultOutput.success({ deletedChatId: body.chatId });
     }
@@ -56,6 +62,8 @@ export class ChatService {
             addedUserId: user.userId,
         };
 
+        this.logger.log(`addedUserToChat: ${response}`);
+
         return ResultOutput.success(response);
     }
 
@@ -72,6 +80,8 @@ export class ChatService {
             deletedChatId: chat.chatId,
             deletedUserId: user.userId,
         };
+
+        this.logger.log(`deleteUserFromChat: ${response}`);
 
         return ResultOutput.success(response);
     }

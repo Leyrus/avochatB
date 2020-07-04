@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -13,6 +13,8 @@ export class UserService {
         private usersRepository: Repository<User>
     ) {}
 
+    private logger: Logger = new Logger('ChatService');
+
     async findUser(body: IUserDTO) {
         const user = await this.usersRepository.findOne({
             login: body.login,
@@ -23,6 +25,8 @@ export class UserService {
         }
 
         delete user.password;
+
+        this.logger.log(`user: ${JSON.stringify(user)}`);
 
         return ResultOutput.success(user);
     }
@@ -46,6 +50,8 @@ export class UserService {
             });
 
         delete newUser.password;
+
+        this.logger.log(`user: ${JSON.stringify(newUser)}`);
 
         return ResultOutput.success({ ...newUser, chats: [] });
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from '../../entities/messages.entity';
@@ -17,6 +17,8 @@ export class MessagesService {
         private usersRepository: Repository<User>
     ) {}
 
+    private logger: Logger = new Logger('MessagesService');
+
     async getMessages(body: IGetMessagesDTO) {
         const users = await this.usersRepository.find({ relations: ['chats'] });
         const chatUsers = users
@@ -27,6 +29,8 @@ export class MessagesService {
 
             return createMessage(message, user);
         });
+
+        this.logger.log(`fullMessages: ${JSON.stringify(fullMessages)}`);
 
         return ResultOutput.success(fullMessages);
     }
@@ -43,11 +47,15 @@ export class MessagesService {
                 dateChange: null,
             });
 
+        this.logger.log(`message: ${JSON.stringify(message)}, user: ${JSON.stringify(user)}`);
+
         return ResultOutput.success(createMessage(message, user));
     }
 
     async deleteMessage(body: IDeleteMessagesDTO) {
         await this.messagesRepository.delete(body.messageId);
+
+        this.logger.log(`deletedMessageId: ${JSON.stringify(body.messageId)}`);
 
         return ResultOutput.success({ deletedMessageId: body.messageId });
     }
@@ -62,6 +70,8 @@ export class MessagesService {
         const message = await this.messagesRepository
             .findOne({ messageId: body.messageId });
         const user = await this.usersRepository.findOne({ userId: message.userId });
+
+        this.logger.log(`message: ${message}, user: ${user}`);
 
         return ResultOutput.success(createMessage(message, user));
     }
