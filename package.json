@@ -8,7 +8,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "publish": "nest build && scp -r dist/* victor@leyrusdev.ru:/var/www/chat.leyrusdev.ru/app/",
+    "publish": "scp -r dist/* victor@leyrusdev.ru:/var/www/chat.leyrusdev.ru/app/",
+    "bp": "nest build && scp -r dist/* victor@leyrusdev.ru:/var/www/chat.leyrusdev.ru/app/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -33,6 +34,7 @@
     "csurf": "^1.11.0",
     "express-rate-limit": "^5.1.3",
     "helmet": "^3.23.3",
+    "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

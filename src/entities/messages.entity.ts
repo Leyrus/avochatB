@@ -11,7 +11,7 @@ export class Message {
     @Column()
     userId: number;
 
-    @Column()
+    @Column({ type: 'longtext' })
     message: string;
 
     @Column()
