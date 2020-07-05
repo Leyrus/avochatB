@@ -30,7 +30,7 @@ export class MessagesService {
             return createMessage(message, user);
         });
 
-        this.logger.log(`fullMessages: ${JSON.stringify(fullMessages)}`);
+        this.logger.log(`fullMessages count: ${fullMessages.length}`);
 
         return ResultOutput.success(fullMessages);
     }
