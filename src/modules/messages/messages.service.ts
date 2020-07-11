@@ -21,9 +21,19 @@ export class MessagesService {
 
     async getMessages(body: IGetMessagesDTO) {
         const users = await this.usersRepository.find({ relations: ['chats'] });
+
+        if(!users) {
+            return ResultOutput.error('Users not found');
+        }
+
         const chatUsers = users
             .filter(user => user.chats.find(chat => chat.chatId === body.chatId));
         const messages = await this.messagesRepository.find({ chatId: body.chatId });
+
+        if(!messages) {
+            return ResultOutput.error('Messages not found');
+        }
+
         const fullMessages = messages.map(message => {
             const user = chatUsers.find(user => user.userId === message.userId);
 
@@ -37,6 +47,10 @@ export class MessagesService {
 
     async sendMessage(body: ISendMessagesDTO) {
         const user = await this.usersRepository.findOne({ login: body.login });
+
+        if(!user) {
+            return ResultOutput.error('Messages not found');
+        }
 
         const message = await this.messagesRepository
             .save({
