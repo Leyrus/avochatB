@@ -15,5 +15,8 @@ export interface IAddUserDTO {
 export interface IDeleteUserDTO {
     login: string,
     chatId: number
+}
 
+export interface IGetUsersDTO {
+    chatId: number
 }

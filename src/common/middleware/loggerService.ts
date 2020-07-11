@@ -7,7 +7,7 @@ export class MyLogger implements LoggerService {
         ? path.resolve(__dirname, `../../logs/${new Date().toString().substr(4, 11).replace(/ /g , '_')}.log`)
         : path.resolve(__dirname, '../../../logs/logs.log')
 
-    log(message: any, context?: string): void {
+    private saveLog = (message, context) => {
         if (process.env.NODE_ENV === 'production') {
             const logMessage = `${new Date().toString().substr(4, 20)} - [${context}]: ${message}\n`;
             fs.appendFile(this.getLogsFile(), logMessage, (err) => {
@@ -16,6 +16,10 @@ export class MyLogger implements LoggerService {
                 }
             });
         }
+    }
+
+    log(message: any, context?: string): void {
+        this.saveLog(message, context);
         console.log(`\x1b[35m ${new Date().toISOString()}\x1b[32m - [${context}]: \x1b[30m${message}`);
     }
 
@@ -24,7 +28,8 @@ export class MyLogger implements LoggerService {
     }
 
     error(message: any, trace?: string, context?: string): any {
-        console.error(message);
+        this.saveLog(message, context);
+        console.log(`\x1b[35m ${new Date().toISOString()}\x1b[31m - [${context}]: \x1b[31m${message}`);
     }
 
     verbose(message: any, context?: string): any {

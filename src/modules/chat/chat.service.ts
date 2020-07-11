@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Chat } from '../../entities/chat.entity';
 import { User } from '../../entities/user.entity';
 import { ResultOutput } from '../../utils/response';
-import { IAddUserDTO, ICreateChatDTO, IDeleteChatDTO, IDeleteUserDTO } from './chat.interface';
+import { IAddUserDTO, ICreateChatDTO, IDeleteChatDTO, IDeleteUserDTO, IGetUsersDTO } from './chat.interface';
 
 @Injectable()
 export class ChatService {
@@ -22,8 +22,13 @@ export class ChatService {
             login: body.login,
         }, { relations: ['chats'] });
 
+        if(!user) {
+            return ResultOutput.error('User not found');
+        }
+
         const newChat = await this.chatsRepository
             .save({ name: body.chatName, userOwnerId: user.userId });
+
         await this.usersRepository.save({
             ...user,
             chats: [...user.chats, newChat],
@@ -51,7 +56,17 @@ export class ChatService {
         const user = await this.usersRepository.findOne({
             login: body.login,
         }, { relations: ['chats'] });
+
+        if(!user) {
+            return ResultOutput.error('User not found');
+        }
+
         const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
+
+        if(!chat) {
+            return ResultOutput.error('Chat not found');
+        }
+
         await this.usersRepository.save({
             ...user,
             chats: [...user.chats, chat],
@@ -71,7 +86,17 @@ export class ChatService {
         const user = await this.usersRepository.findOne({
             login: body.login,
         }, { relations: ['chats'] });
+
+        if(!user) {
+            return ResultOutput.error('User not found');
+        }
+
         const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
+
+        if(!chat) {
+            return ResultOutput.error('Chat not found');
+        }
+
         await this.usersRepository.save({
             ...user,
             chats: user.chats.filter(innerChat => innerChat.chatId !== chat.chatId),
@@ -84,5 +109,25 @@ export class ChatService {
         this.logger.log(`deleteUserFromChat: ${response}`);
 
         return ResultOutput.success(response);
+    }
+
+    async getUsers(body: IGetUsersDTO) {
+        const chat = await this.chatsRepository.findOne({
+            chatId: body.chatId,
+        },{
+            relations: ['users'],
+        });
+        if(!chat) {
+            return ResultOutput.error('Chat not found');
+        }
+        const chatUsers = chat.users.map(user => {
+            delete user.password;
+
+            return user;
+        });
+
+        this.logger.log(`chatUsers: ${chatUsers}`);
+
+        return ResultOutput.success(chatUsers);
     }
 }
