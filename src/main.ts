@@ -4,7 +4,7 @@ import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import * as fs from 'fs';
 import { AppModule } from './app.module';
-import { MyLogger } from './common/middleware/loggerService';
+import { CustomLogger } from './common/middleware/loggerService';
 import { AllExceptionsFilter } from './common/middleware/allExeptions.filter';
 
 const getHttpsOptions = () => ({
@@ -17,7 +17,7 @@ async function bootstrap() {
         ? getHttpsOptions() : null;
     const app = await NestFactory.create(AppModule, {
         cors: true,
-        logger: new MyLogger(),
+        logger: new CustomLogger(),
         httpsOptions,
     });
     app.use(helmet());
@@ -28,7 +28,7 @@ async function bootstrap() {
     app.use(
         rateLimit({
             windowMs: 15 * 60 * 1000,
-            max: 200,
+            max: 300,
         })
     );
     await app.listen(4000);

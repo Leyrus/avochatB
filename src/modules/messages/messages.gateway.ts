@@ -8,9 +8,12 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
+import { UserService } from '../user/user.service';
 
 @WebSocketGateway(4001)
 export class MessagesGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+    constructor(private userService: UserService) {}
+
     @WebSocketServer()
     server: Server;
 
@@ -34,15 +37,22 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.server.emit('deleteMessage', { body: payload });
     }
 
+    @SubscribeMessage('online')
+    online(client: Socket, payload: {userId: string}): void {
+        this.logger.log(`online userID: ${JSON.stringify(payload.userId)}`);
+        this.userService.setOnline(+payload.userId, client.id).then();
+    }
+
     afterInit() {
         this.logger.log('Init');
     }
 
-    handleDisconnect(client: Socket) {
-        this.logger.log(`Client disconnected: ${client.id}`);
-    }
-
     handleConnection(client: Socket) {
         this.logger.log(`Client connected: ${client.id}`);
+    }
+
+    handleDisconnect(client: Socket) {
+        this.logger.log(`Client disconnected: ${client.id}`);
+        this.userService.setOffline(client.id).then();
     }
 }

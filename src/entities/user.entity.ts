@@ -6,6 +6,9 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number;
 
+    @Column({ default: '' })
+    socketClientId: string
+
     @Column()
     name: string;
 
@@ -18,4 +21,6 @@ export class User {
     @ManyToMany(() => Chat, (chat: Chat) => chat.users)
     @JoinTable()
     public chats: Chat[]
+
+    isOnline: boolean
 }

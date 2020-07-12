@@ -2,7 +2,7 @@ import { LoggerService } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class MyLogger implements LoggerService {
+export class CustomLogger implements LoggerService {
     private getLogsFile = () => process.env.NODE_ENV === 'production'
         ? path.resolve(__dirname, `../../logs/${new Date().toString().substr(4, 11).replace(/ /g , '_')}.log`)
         : path.resolve(__dirname, '../../../logs/logs.log')
