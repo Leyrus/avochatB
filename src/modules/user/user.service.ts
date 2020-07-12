@@ -24,7 +24,9 @@ export class UserService {
             return ResultOutput.error('Invalid username or password');
         }
 
+        user.isOnline = !!user.socketClientId;
         delete user.password;
+        delete user.socketClientId;
 
         this.logger.log(`user: ${JSON.stringify(user)}`);
 
@@ -49,10 +51,24 @@ export class UserService {
                 password: await bcrypt.hash(body.password1, 10),
             });
 
+        newUser.isOnline = !!user.socketClientId;
         delete newUser.password;
+        delete newUser.socketClientId;
 
         this.logger.log(`user: ${JSON.stringify(newUser)}`);
 
         return ResultOutput.success({ ...newUser, chats: [] });
+    }
+
+    async setOnline(userId: number, socketClientId: string) {
+        await this.usersRepository.update({ userId }, {
+            socketClientId,
+        });
+    }
+
+    async setOffline(socketClientId: string) {
+        await this.usersRepository.update({ socketClientId }, {
+            socketClientId: '',
+        });
     }
 }

@@ -121,7 +121,9 @@ export class ChatService {
             return ResultOutput.error('Chat not found');
         }
         const chatUsers = chat.users.map(user => {
+            user.isOnline = !!user.socketClientId;
             delete user.password;
+            delete user.socketClientId;
 
             return user;
         });
