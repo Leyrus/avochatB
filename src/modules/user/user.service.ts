@@ -88,18 +88,18 @@ export class UserService {
             changedFields.name = body.newName;
         }
 
-        if (body.newPassword1 && body.newPassword2){
+        if (body.oldPassword && body.newPassword1 && body.newPassword2){
             if (!await bcrypt.compare(body.oldPassword, user.password)) {
                 return ResultOutput.error('Invalid password');
             }
             if (body.newPassword1 !== body.newPassword2) {
                 return ResultOutput.error('Different passwords');
             }
-            changedFields.password = body.newName;
+            changedFields.password = await bcrypt.hash(body.newPassword1, 10);
         }
 
         if (isEmpty(changedFields)) {
-            return ResultOutput.error('1Nothing to change');
+            return ResultOutput.error('Nothing to change');
         }
 
         await this.usersRepository.update({ userId: body.userId }, changedFields);
