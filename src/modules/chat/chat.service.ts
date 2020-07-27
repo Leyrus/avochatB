@@ -4,7 +4,14 @@ import { Repository } from 'typeorm';
 import { Chat } from '../../entities/chat.entity';
 import { User } from '../../entities/user.entity';
 import { ResultOutput } from '../../utils/response';
-import { IAddUserDTO, ICreateChatDTO, IDeleteChatDTO, IDeleteUserDTO, IGetUsersDTO } from './chat.interface';
+import {
+    IAddUserDTO,
+    ICreateChatDTO,
+    IDeleteChatDTO,
+    IDeleteUserDTO,
+    IEditChatDTO,
+    IGetUsersDTO
+} from './chat.interface';
 
 @Injectable()
 export class ChatService {
@@ -91,7 +98,8 @@ export class ChatService {
             return ResultOutput.error('User not found');
         }
 
-        const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
+        const chat = await this.chatsRepository
+            .findOne({ chatId: body.chatId });
 
         if(!chat) {
             return ResultOutput.error('Chat not found');
@@ -99,7 +107,8 @@ export class ChatService {
 
         await this.usersRepository.save({
             ...user,
-            chats: user.chats.filter(innerChat => innerChat.chatId !== chat.chatId),
+            chats: user.chats
+                .filter(innerChat => innerChat.chatId !== chat.chatId),
         });
         const response = {
             deletedChatId: chat.chatId,
@@ -131,5 +140,16 @@ export class ChatService {
         this.logger.log(`chatUsers: ${chatUsers}`);
 
         return ResultOutput.success(chatUsers);
+    }
+
+    async editChat(body: IEditChatDTO) {
+        const { chatId, newName } = body;
+        await this.chatsRepository
+            .update(
+                { chatId }, { name: newName }
+                );
+        const chat = await this.chatsRepository.findOne({ chatId });
+
+        return ResultOutput.success(chat);
     }
 }
