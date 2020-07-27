@@ -62,7 +62,6 @@ export class UserService {
     }
 
     async editUser(body: IEditUserDTO) {
-        console.log('myLog body', body);
         const user = await this.usersRepository.findOne({
             userId: body.userId,
         });
