@@ -1,6 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { IAddUserDTO, ICreateChatDTO, IDeleteChatDTO, IDeleteUserDTO, IGetUsersDTO } from './chat.interface';
+import {
+    IAddUserDTO,
+    ICreateChatDTO,
+    IDeleteChatDTO,
+    IDeleteUserDTO,
+    IEditChatNameDTO,
+    IGetUsersDTO
+} from './chat.interface';
 
 @Controller('chat')
 export class ChatController {
@@ -14,6 +21,11 @@ export class ChatController {
     @Post('deleteChat')
     deleteChat(@Body() body: IDeleteChatDTO) {
         return this.chatService.deleteChat(body);
+    }
+
+    @Post('editChatName')
+    editChatName(@Body() body: IEditChatNameDTO) {
+        return this.chatService.editChatName(body);
     }
 
     @Post('addUserToChat')
@@ -30,4 +42,10 @@ export class ChatController {
     getUsers(@Body() body: IGetUsersDTO) {
         return this.chatService.getUsers(body);
     }
+
+    @Post('getHi')
+    getHi(@Body() body: any) {
+        return { str: 'hi' + body.str };
+    }
 }
+

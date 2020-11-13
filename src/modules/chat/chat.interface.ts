@@ -7,13 +7,18 @@ export interface IDeleteChatDTO {
     chatId: number,
 }
 
+export interface IEditChatNameDTO {
+    chatId: number,
+    newChatName: string,
+}
+
 export interface IAddUserDTO {
     login: string,
     chatId: number
 }
 
 export interface IDeleteUserDTO {
-    login: string,
+    userId: number,
     chatId: number
 }
 

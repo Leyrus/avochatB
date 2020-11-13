@@ -4,7 +4,14 @@ import { Repository } from 'typeorm';
 import { Chat } from '../../entities/chat.entity';
 import { User } from '../../entities/user.entity';
 import { ResultOutput } from '../../utils/response';
-import { IAddUserDTO, ICreateChatDTO, IDeleteChatDTO, IDeleteUserDTO, IGetUsersDTO } from './chat.interface';
+import {
+    IAddUserDTO,
+    ICreateChatDTO,
+    IDeleteChatDTO,
+    IDeleteUserDTO,
+    IEditChatNameDTO,
+    IGetUsersDTO
+} from './chat.interface';
 
 @Injectable()
 export class ChatService {
@@ -52,6 +59,20 @@ export class ChatService {
         return ResultOutput.success({ deletedChatId: body.chatId });
     }
 
+    async editChatName(body: IEditChatNameDTO) {
+        if(!body.chatId) {
+            return ResultOutput.error('There is no chatId');
+        }
+        if(!body.newChatName) {
+            return ResultOutput.error('There is no newChatName');
+        }
+        await this.chatsRepository.update({ chatId: body.chatId }, {
+            name: body.newChatName,
+        });
+
+        return ResultOutput.success(body);
+    }
+
     async addUser(body: IAddUserDTO) {
         const user = await this.usersRepository.findOne({
             login: body.login,
@@ -84,7 +105,7 @@ export class ChatService {
 
     async deleteUser(body: IDeleteUserDTO) {
         const user = await this.usersRepository.findOne({
-            login: body.login,
+            userId: body.userId,
         }, { relations: ['chats'] });
 
         if(!user) {
