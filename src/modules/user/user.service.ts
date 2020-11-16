@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { isEmpty } from 'lodash';
 import * as bcrypt from 'bcrypt';
-import { INewUserDTO, IUserDTO } from './user.interface';
+import { IEditUserDTO, INewUserDTO, IUserChange, IUserDTO } from './user.interface';
 import { ResultOutput } from '../../utils/response';
 import { User } from '../../entities/user.entity';
 
@@ -51,13 +52,58 @@ export class UserService {
                 password: await bcrypt.hash(body.password1, 10),
             });
 
-        newUser.isOnline = !!user.socketClientId;
+        newUser.isOnline = !!newUser.socketClientId;
         delete newUser.password;
         delete newUser.socketClientId;
 
         this.logger.log(`user: ${JSON.stringify(newUser)}`);
 
         return ResultOutput.success({ ...newUser, chats: [] });
+    }
+
+    async editUser(body: IEditUserDTO) {
+        const user = await this.usersRepository.findOne({
+            userId: body.userId,
+        });
+
+        if (!user) {
+            return ResultOutput.error('User already exists');
+        }
+
+        const changedFields: IUserChange = {};
+
+        if (body.newLogin){
+            const user = await this.usersRepository
+                .findOne({ login: body.newLogin });
+
+            if (user) {
+                return ResultOutput.error('this login is busy');
+            }
+
+            changedFields.login = body.newLogin;
+        }
+
+        if (body.newName){
+            changedFields.name = body.newName;
+        }
+
+        if (body.oldPassword && body.newPassword1 && body.newPassword2){
+            if (!await bcrypt.compare(body.oldPassword, user.password)) {
+                return ResultOutput.error('Invalid password');
+            }
+            if (body.newPassword1 !== body.newPassword2) {
+                return ResultOutput.error('Different passwords');
+            }
+            changedFields.password = await bcrypt.hash(body.newPassword1, 10);
+        }
+
+        if (isEmpty(changedFields)) {
+            return ResultOutput.error('Nothing to change');
+        }
+
+        await this.usersRepository.update({ userId: body.userId }, changedFields);
+
+        return ResultOutput.success({ changedFields: changedFields });
     }
 
     async setOnline(userId: number, socketClientId: string) {

@@ -42,10 +42,4 @@ export class ChatController {
     getUsers(@Body() body: IGetUsersDTO) {
         return this.chatService.getUsers(body);
     }
-
-    @Post('getHi')
-    getHi(@Body() body: any) {
-        return { str: 'hi' + body.str };
-    }
 }
-

@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { AppModule } from './app.module';
 import { CustomLogger } from './common/middleware/loggerService';
 import { AllExceptionsFilter } from './common/middleware/allExeptions.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 const getHttpsOptions = () => ({
   key: fs.readFileSync('./key/private.pem'),
@@ -31,6 +32,12 @@ async function bootstrap() {
             max: 300,
         })
     );
+    const options = new DocumentBuilder()
+       .setTitle('Avochat api')
+       .setVersion('1.0')
+       .build();
+     const document = SwaggerModule.createDocument(app, options);
+     SwaggerModule.setup('api', app, document);
     await app.listen(4000);
 }
 bootstrap();
