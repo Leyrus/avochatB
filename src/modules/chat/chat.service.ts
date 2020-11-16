@@ -9,7 +9,7 @@ import {
     ICreateChatDTO,
     IDeleteChatDTO,
     IDeleteUserDTO,
-    IEditChatDTO,
+    IEditChatNameDTO,
     IGetUsersDTO
 } from './chat.interface';
 
@@ -59,6 +59,20 @@ export class ChatService {
         return ResultOutput.success({ deletedChatId: body.chatId });
     }
 
+    async editChatName(body: IEditChatNameDTO) {
+        if(!body.chatId) {
+            return ResultOutput.error('There is no chatId');
+        }
+        if(!body.newChatName) {
+            return ResultOutput.error('There is no newChatName');
+        }
+        await this.chatsRepository.update({ chatId: body.chatId }, {
+            name: body.newChatName,
+        });
+
+        return ResultOutput.success(body);
+    }
+
     async addUser(body: IAddUserDTO) {
         const user = await this.usersRepository.findOne({
             login: body.login,
@@ -91,15 +105,14 @@ export class ChatService {
 
     async deleteUser(body: IDeleteUserDTO) {
         const user = await this.usersRepository.findOne({
-            login: body.login,
+            userId: body.userId,
         }, { relations: ['chats'] });
 
         if(!user) {
             return ResultOutput.error('User not found');
         }
 
-        const chat = await this.chatsRepository
-            .findOne({ chatId: body.chatId });
+        const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
 
         if(!chat) {
             return ResultOutput.error('Chat not found');
@@ -107,8 +120,7 @@ export class ChatService {
 
         await this.usersRepository.save({
             ...user,
-            chats: user.chats
-                .filter(innerChat => innerChat.chatId !== chat.chatId),
+            chats: user.chats.filter(innerChat => innerChat.chatId !== chat.chatId),
         });
         const response = {
             deletedChatId: chat.chatId,
@@ -140,16 +152,5 @@ export class ChatService {
         this.logger.log(`chatUsers: ${chatUsers}`);
 
         return ResultOutput.success(chatUsers);
-    }
-
-    async editChat(body: IEditChatDTO) {
-        const { chatId, newName } = body;
-        await this.chatsRepository
-            .update(
-                { chatId }, { name: newName }
-                );
-        const chat = await this.chatsRepository.findOne({ chatId });
-
-        return ResultOutput.success(chat);
     }
 }

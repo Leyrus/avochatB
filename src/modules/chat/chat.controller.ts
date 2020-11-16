@@ -5,7 +5,7 @@ import {
     ICreateChatDTO,
     IDeleteChatDTO,
     IDeleteUserDTO,
-    IEditChatDTO,
+    IEditChatNameDTO,
     IGetUsersDTO
 } from './chat.interface';
 
@@ -23,6 +23,11 @@ export class ChatController {
         return this.chatService.deleteChat(body);
     }
 
+    @Post('editChatName')
+    editChatName(@Body() body: IEditChatNameDTO) {
+        return this.chatService.editChatName(body);
+    }
+
     @Post('addUserToChat')
     addUser(@Body() body: IAddUserDTO) {
         return this.chatService.addUser(body);
@@ -36,10 +41,5 @@ export class ChatController {
     @Post('getUsers')
     getUsers(@Body() body: IGetUsersDTO) {
         return this.chatService.getUsers(body);
-    }
-
-    @Post('editChat')
-    editChat(@Body() body: IEditChatDTO) {
-        return this.chatService.editChat(body);
     }
 }
