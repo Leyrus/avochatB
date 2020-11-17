@@ -38,7 +38,7 @@ export class UserService {
                 ...chat,
                 lastMessage: lastMessage
                     ? Crypto.decrypt(lastMessage.message)
-                    : '',
+                    : null,
             });
         }
 
