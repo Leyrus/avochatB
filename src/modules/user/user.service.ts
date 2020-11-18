@@ -6,12 +6,16 @@ import * as bcrypt from 'bcrypt';
 import { IEditUserDTO, INewUserDTO, IUserChange, IUserDTO } from './user.interface';
 import { ResultOutput } from '../../utils/response';
 import { User } from '../../entities/user.entity';
+import { Message } from '../../entities/messages.entity';
+import { Crypto } from '../../utils/crypto';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
-        private usersRepository: Repository<User>
+        private usersRepository: Repository<User>,
+        @InjectRepository(Message)
+        private messageRepository: Repository<Message>
     ) {}
 
     private logger: Logger = new Logger('ChatService');
@@ -21,11 +25,29 @@ export class UserService {
             login: body.login,
         }, { relations: ['chats'] });
 
+        const newChats = [];
+
+        for (const chat of user.chats) {
+            const lastMessage = await this.messageRepository
+                .createQueryBuilder('message')
+                .where('chatId = :chatId', { chatId: chat.chatId })
+                .orderBy('dateCreate', 'DESC')
+                .getOne();
+
+            newChats.push({
+                ...chat,
+                lastMessage: lastMessage
+                    ? Crypto.decrypt(lastMessage.message)
+                    : null,
+            });
+        }
+
         if (!user || !await bcrypt.compare(body.password, user.password)) {
             return ResultOutput.error('Invalid username or password');
         }
 
         user.isOnline = !!user.socketClientId;
+        user.chats = newChats;
         delete user.password;
         delete user.socketClientId;
 
@@ -67,7 +89,7 @@ export class UserService {
         });
 
         if (!user) {
-            return ResultOutput.error('User already exists');
+            return ResultOutput.error('User does not exist');
         }
 
         const changedFields: IUserChange = {};
