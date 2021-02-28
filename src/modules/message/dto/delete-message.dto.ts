@@ -1,3 +1,6 @@
-export interface IDeleteMessagesDTO {
-  messageId: number,
+import { ApiProperty } from '@nestjs/swagger';
+
+export class IDeleteMessagesDTO {
+  @ApiProperty()
+  messageId: number
 }
