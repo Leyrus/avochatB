@@ -35,7 +35,6 @@ export class AuthController {
   @Post('/signIn')
   async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IReadableUser> {
     const result = await this.authService.signIn(signInDto);
-    console.log(result, 'myLog result');
     return ResultOutput.success(result);
   }
 

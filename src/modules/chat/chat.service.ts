@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDTO } from './dto/create-chat.dto';
-import { IChat } from './interfaces/chat.interface';
+import { IChat, IDeleteChatResponse } from './interfaces/chat.interface';
+import { DeleteChatDTO } from './dto/delete-participants.dto';
 
 @Injectable()
 export class ChatService {
@@ -34,4 +35,16 @@ export class ChatService {
 
     return newChat;
   }
+
+  async deleteChat(body: DeleteChatDTO): Promise<IDeleteChatResponse> {
+    await this.chatsRepository
+      .createQueryBuilder('chat')
+      .delete()
+      .from(ChatEntity)
+      .where('id = :chatId', { chatId: body.chatId })
+      .execute();
+
+    return { deletedChatId: body.chatId };
+  }
 }
+

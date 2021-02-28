@@ -5,7 +5,8 @@ import { ResultOutput } from '../../utils/response';
 import { IResponsePromise } from '../../types';
 import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';
-import { IChat } from './interfaces/chat.interface';
+import { IChat, IDeleteChatResponse } from './interfaces/chat.interface';
+import { DeleteChatDTO } from './dto/delete-participants.dto';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -25,8 +26,11 @@ export class ChatController {
   @Post('delete')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  deleteChat(): any {
-    return ResultOutput.success({});
+  async deleteChat(
+    @Body(new ValidationPipe()) deleteChatDTO: DeleteChatDTO,
+  ): IResponsePromise<IDeleteChatResponse> {
+    const result = await this.chatService.deleteChat(deleteChatDTO);
+    return ResultOutput.success(result);
   }
 
   @Post('addUserToChat')

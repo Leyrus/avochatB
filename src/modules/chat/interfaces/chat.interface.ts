@@ -3,3 +3,7 @@ export interface IChat {
   name: string,
   userOwnerId: number,
 }
+
+export interface IDeleteChatResponse {
+  deletedChatId: number,
+}
