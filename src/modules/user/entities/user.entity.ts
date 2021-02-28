@@ -28,6 +28,12 @@ export class UserEntity extends AbstractEntity {
   @Column()
   status: string;
 
+  @Column({ nullable: true })
+  socketClientId: string
+
+  @Column({ default: false })
+  isOnline: boolean
+
   @Column({ default: 'user' })
   roles: string;
 

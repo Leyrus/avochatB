@@ -3,6 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 import { MessageService } from './message.service';
 import { MessageController } from './message.controller';
 import { MessageEntity } from './entities/message.entity';
@@ -18,6 +19,6 @@ import { MessagesGateway } from './messages.gateway';
     forwardRef(() => AuthModule),
     ],
   controllers: [MessageController],
-  providers: [MessageService, MessagesGateway],
+  providers: [MessageService, MessagesGateway, UserService],
 })
 export class MessageModule {}

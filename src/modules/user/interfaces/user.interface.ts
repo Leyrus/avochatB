@@ -11,6 +11,8 @@ export interface IUser {
   password: string,
   status: string,
   chats?: IChat[],
+  socketClientId?: string,
+  isOnline?: boolean,
   roles: string,
 }
 
@@ -30,6 +32,8 @@ export interface IReadableUser {
   roles: string;
   chats?: IChat[],
   accessToken?: string;
+  socketClientId?: string,
+  isOnline?: boolean,
 }
 
 export interface IUserResponse {

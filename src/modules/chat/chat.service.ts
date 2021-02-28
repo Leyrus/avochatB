@@ -30,9 +30,8 @@ export class ChatService {
       throw new BadRequestException('Chat not found');
     }
     return chat.users.map(user => {
-      // @TODO добавить когда появятся сокеты
-      // user.isOnline = !!user.socketClientId;
-      // delete user.socketClientId;
+      user.isOnline = !!user.socketClientId;
+      delete user.socketClientId;
       delete user.password;
 
       return user;

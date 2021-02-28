@@ -63,4 +63,16 @@ export class UserService {
     const user = await this.findById(authUser.id, authUser.withChats);
     return _.omit(user, Object.values(userSensitiveFieldsEnum)) as IReadableUser;
   }
+
+  async setOnline(userId: number, socketClientId: string) {
+    await this.usersRepository.update({ id: userId }, {
+      socketClientId,
+    });
+  }
+
+  async setOffline(socketClientId: string) {
+    await this.usersRepository.update({ socketClientId }, {
+      socketClientId: '',
+    });
+  }
 }

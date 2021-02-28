@@ -1,9 +1,9 @@
 import { Crypto } from '../../../utils/crypto';
 import { IMessage } from '../interfaces/message';
-import { IUser } from '../../user/interfaces/user.interface';
 import { MessageEntity } from '../entities/message.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
-export const createMessage = (message: MessageEntity, user: IUser): IMessage => ({
+export const createMessage = (message: MessageEntity, user: UserEntity): IMessage => ({
   messageId: message.messageId,
   message: Crypto.decrypt(message.message),
   dateCreate: message.dateCreate,
