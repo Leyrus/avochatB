@@ -18,7 +18,7 @@ export class MailService {
     send(
       data: IMailGunData): Promise<Mailgun.messages.SendResponse> {
         return new Promise((res, rej) => {
-          if(config.enableMain === 'true') {
+          if(config.enableMail === 'true') {
             this.mg.messages()
               .send(data, function(error, body) {
                 if (error) {

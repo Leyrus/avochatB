@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FindOneOptions } from 'typeorm/browser';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUser, IReadableUser } from './interfaces/user.interface';
@@ -49,12 +50,17 @@ export class UserService {
     return true;
   }
 
-  async findById(id: number): Promise<UserEntity> {
-    return await this.usersRepository.findOne({ where: { id } });
+  async findById(id: number, withChats = false): Promise<UserEntity> {
+    const options: FindOneOptions<UserEntity> = {};
+    if (withChats) {
+      options.relations = ['chats'];
+    }
+    return await this.usersRepository.findOne(
+      id, options);
   }
 
   async findReadableUser(id: number): Promise<IReadableUser> {
-    const user = await this.findById(id);
+    const user = await this.findById(id, true);
     return _.omit(user, Object.values(userSensitiveFieldsEnum)) as IReadableUser;
   }
 }

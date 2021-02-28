@@ -1,45 +1,53 @@
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { classToPlain, Exclude } from 'class-transformer';
 import { IsEmail } from 'class-validator';
 import { AbstractEntity } from '../../../entity/abstract-entity';
 import { IUserResponse } from '../interfaces/user.interface';
+import { ChatEntity } from '../../chat/entities/chat.entity';
 
 @Entity('user')
 export class UserEntity extends AbstractEntity {
-    @Column({ default: 'ru' })
-    lang: string;
+  @Column({ default: 'ru' })
+  lang: string;
 
-    @Column({ unique: true })
-    @IsEmail()
-    email: string;
+  @Column({ unique: true })
+  @IsEmail()
+  email: string;
 
-    @Column({ unique: true })
-    login: string;
+  @Column({ unique: true })
+  login: string;
 
-    @Column({ nullable: true })
-    name: string | null;
+  @Column({ nullable: true })
+  name: string | null;
 
-    @Column()
-    @Exclude()
-    password: string;
+  @Column()
+  @Exclude()
+  password: string;
 
-    @Column()
-    status: string;
+  @Column()
+  status: string;
 
-    @Column({ default: 'user' })
-    roles: string;
+  @Column({ default: 'user' })
+  roles: string;
 
-    @BeforeInsert()
-    async hashPassword() {
-        this.password = await bcrypt.hash(this.password,10);
-    }
+  @ManyToMany(
+    () => ChatEntity,
+    (chat: ChatEntity) => chat.users,
+  )
+  @JoinTable()
+  public chats: ChatEntity[]
 
-    async comparePassword(attempt: string) {
-        return await bcrypt.compare(attempt, this.password);
-    }
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 
-    toJSON(): IUserResponse {
-        return <IUserResponse>classToPlain(this);
-    }
+  async comparePassword(attempt: string) {
+    return await bcrypt.compare(attempt, this.password);
+  }
+
+  toJSON(): IUserResponse {
+    return <IUserResponse>classToPlain(this);
+  }
 }

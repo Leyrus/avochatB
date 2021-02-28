@@ -1,3 +1,5 @@
+import { IChat } from '../../chat/interfaces/chat.interface';
+
 export interface IUser {
   id: number,
   createdAt: Date,
@@ -8,6 +10,7 @@ export interface IUser {
   name: string | null,
   password: string,
   status: string,
+  chats?: IChat[],
   roles: string,
 }
 
@@ -24,6 +27,7 @@ export interface IReadableUser {
   status: string;
   name: string | null;
   roles: string;
+  chats?: IChat[],
   accessToken?: string;
 }
 

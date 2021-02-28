@@ -8,7 +8,7 @@ const config = {
     feAppUrl: process.env.FE_APP_URL || 'http://localhost:3000',
     publicKeyPath: process.env.PUBLIC_KEY_PATH || '',
     privateKeyPath: process.env.PRIVATE_KEY_PATH || '',
-    enableMain: process.env.ENABLE_MAIL || 'false',
+    enableMail: process.env.ENABLE_MAIL || 'false',
     apiVersion: process.env.API_VERSION || 0,
 };
 
