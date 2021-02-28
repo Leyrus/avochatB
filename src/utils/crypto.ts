@@ -25,4 +25,3 @@ export class Crypto {
         return decrypted.toString();
     }
 }
-

@@ -1,45 +1,50 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import {
-    IAddUserDTO,
-    ICreateChatDTO,
-    IDeleteChatDTO,
-    IDeleteUserDTO,
-    IEditChatDTO,
-    IGetUsersDTO
-} from './chat.interface';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ResultOutput } from '../../utils/response';
 
+@ApiTags('chat')
 @Controller('chat')
 export class ChatController {
-    constructor(private chatService: ChatService) {}
+  @Post('create')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  createChat(): any {
+    return ResultOutput.success({});
+  }
 
-    @Post('createChat')
-    createChat(@Body() body: ICreateChatDTO) {
-        return this.chatService.createChat(body);
-    }
+  @Post('delete')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  deleteChat(): any {
+    return ResultOutput.success({});
+  }
 
-    @Post('deleteChat')
-    deleteChat(@Body() body: IDeleteChatDTO) {
-        return this.chatService.deleteChat(body);
-    }
+  @Post('addUserToChat')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  addUserToChat(): any {
+    return ResultOutput.success({});
+  }
 
-    @Post('addUserToChat')
-    addUser(@Body() body: IAddUserDTO) {
-        return this.chatService.addUser(body);
-    }
+  @Post('deleteUserFromChat')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  deleteUserFromChat(): any {
+    return ResultOutput.success({});
+  }
 
-    @Post('deleteUserFromChat')
-    deleteUser(@Body() body: IDeleteUserDTO) {
-        return this.chatService.deleteUser(body);
-    }
+  @Post('edit')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  editChat(): any {
+    return ResultOutput.success({});
+  }
 
-    @Post('getUsers')
-    getUsers(@Body() body: IGetUsersDTO) {
-        return this.chatService.getUsers(body);
-    }
-
-    @Post('editChat')
-    editChat(@Body() body: IEditChatDTO) {
-        return this.chatService.editChat(body);
-    }
+  @Get('getParticipants')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  getParticipants(): any {
+    return ResultOutput.success({});
+  }
 }

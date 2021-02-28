@@ -1,6 +1,7 @@
-import { LoggerService } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import { LoggerService } from '@nestjs/common';
+import { isProd } from '../../config';
 
 export class CustomLogger implements LoggerService {
     private getLogsFile = () => process.env.NODE_ENV === 'production'
@@ -8,7 +9,7 @@ export class CustomLogger implements LoggerService {
         : path.resolve(__dirname, '../../../logs/logs.log')
 
     private saveLog = (message, context) => {
-        if (process.env.NODE_ENV === 'production') {
+        if (isProd) {
             const logMessage = `${new Date().toString().substr(4, 20)} - [${context}]: ${message}\n`;
             fs.appendFile(this.getLogsFile(), logMessage, (err) => {
                 if(err) {

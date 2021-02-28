@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { forwardRef, Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { AuthModule } from '../auth/auth.module';
 import { ChatController } from './chat.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../../entities/user.entity';
-import { Chat } from '../../entities/chat.entity';
+import { ChatService } from './chat.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Chat])],
-  providers: [ChatService],
+  imports: [
+    // TypeOrmModule.forFeature([UserEntity]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    forwardRef(() => AuthModule),
+    ],
   controllers: [ChatController],
+  providers: [ChatService],
 })
 export class ChatModule {}
