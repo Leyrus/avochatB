@@ -8,7 +8,7 @@ import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
 import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import {
-  IChat, IDeleteChatRes,IAddParticipantRes, IDeleteParticipantRes,
+  IChat, IDeleteChatRes, IAddParticipantRes, IDeleteParticipantRes,
 } from './interfaces/chat.interface';
 import { DeleteChatDTO } from './dto/delete-participants.dto';
 import { EditChatDTO } from './dto/edit-chat.dto';

@@ -19,8 +19,7 @@ export class MessageService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     private messageGateway: MessagesGateway,
-  ) {
-  }
+  ) {}
 
   async getMessages(chatId: number): Promise<IMessage[]> {
     const users = await this.usersRepository.find({

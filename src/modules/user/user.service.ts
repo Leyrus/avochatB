@@ -36,6 +36,10 @@ export class UserService {
     return await this.usersRepository.findOne({ where: { email } });
   }
 
+  async findByLogin(login: string): Promise<UserEntity> {
+    return await this.usersRepository.findOne({ where: { login } });
+  }
+
   async update(userId: number, payload: Partial<IUser>): Promise<boolean> {
     await this.usersRepository.update({ id: userId }, payload);
     return true;

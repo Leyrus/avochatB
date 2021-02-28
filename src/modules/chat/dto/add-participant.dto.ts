@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AddParticipantDTO {
   @ApiProperty()
-  login: string
+  login: string;
 
   @ApiProperty()
-  chatId: number
+  chatId: number;
 }

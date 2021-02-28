@@ -17,8 +17,9 @@ import { MessagesGateway } from './messages.gateway';
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     forwardRef(() => AuthModule),
-    ],
+  ],
   controllers: [MessageController],
   providers: [MessageService, MessagesGateway, UserService],
 })
-export class MessageModule {}
+export class MessageModule {
+}

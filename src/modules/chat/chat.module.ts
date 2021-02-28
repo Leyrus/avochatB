@@ -12,8 +12,9 @@ import { ChatEntity } from './entities/chat.entity';
     TypeOrmModule.forFeature([UserEntity, ChatEntity]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     forwardRef(() => AuthModule),
-    ],
+  ],
   controllers: [ChatController],
   providers: [ChatService],
 })
-export class ChatModule {}
+export class ChatModule {
+}

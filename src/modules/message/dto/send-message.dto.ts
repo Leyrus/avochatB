@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SendMessagesDTO {
   @ApiProperty()
-  chatId: number
+  chatId: number;
 
   @ApiProperty()
-  message: string
+  message: string;
 }

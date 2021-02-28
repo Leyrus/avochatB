@@ -32,7 +32,7 @@ export class UserController {
   async editUser(
     @GetUser() user: IUserAuth,
     @Body(new ValidationPipe())
-    data: UpdateUserDto,
+      data: UpdateUserDto,
   ): IResponsePromise<IReadableUser> {
     const newUser = await this.authService.updateUser(user.id, data);
     return ResultOutput.success(newUser);

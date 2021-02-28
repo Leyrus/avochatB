@@ -11,7 +11,7 @@ import { UserEntity } from './entities/user.entity';
     TypeOrmModule.forFeature([UserEntity]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     forwardRef(() => AuthModule),
-    ],
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

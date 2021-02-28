@@ -11,12 +11,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
     private readonly tokenService: TokenService,
-    ) {
+  ) {
     super({
-        // говорим что хотим получать поле из хедера
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: config.jwtSecret,
-        passReqToCallback: true,
+      // говорим что хотим получать поле из хедера
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: config.jwtSecret,
+      passReqToCallback: true,
     });
   }
 

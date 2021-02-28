@@ -13,5 +13,5 @@ export class ChatEntity {
   userOwnerId: number;
 
   @ManyToMany(() => UserEntity, user => user.chats)
-  public users: UserEntity[]
+  public users: UserEntity[];
 }

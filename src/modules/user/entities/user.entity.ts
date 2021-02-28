@@ -29,10 +29,10 @@ export class UserEntity extends AbstractEntity {
   status: string;
 
   @Column({ nullable: true })
-  socketClientId: string
+  socketClientId: string;
 
   @Column({ default: false })
-  isOnline: boolean
+  isOnline: boolean;
 
   @Column({ default: 'user' })
   roles: string;
@@ -42,7 +42,7 @@ export class UserEntity extends AbstractEntity {
     (chat: ChatEntity) => chat.users,
   )
   @JoinTable()
-  public chats: ChatEntity[]
+  public chats: ChatEntity[];
 
   @BeforeInsert()
   async hashPassword() {
