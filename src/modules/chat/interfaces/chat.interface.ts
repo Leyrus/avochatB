@@ -4,6 +4,16 @@ export interface IChat {
   userOwnerId: number,
 }
 
-export interface IDeleteChatResponse {
+export interface IDeleteChatRes {
   deletedChatId: number,
+}
+
+export interface IAddParticipantRes {
+  addedChatId: number,
+  addedUserId: number,
+}
+
+export interface IDeleteParticipantRes {
+  deletedChatId: number,
+  deletedUserId: number,
 }
