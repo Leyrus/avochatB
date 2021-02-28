@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import { IChat, IDeleteChatResponse } from './interfaces/chat.interface';
 import { DeleteChatDTO } from './dto/delete-participants.dto';
+import { EditChatDTO } from './dto/edit-chat.dto';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -36,6 +37,16 @@ export class ChatController {
     return ResultOutput.success(result);
   }
 
+  @Post('edit')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  async editChat(@Body(
+    new ValidationPipe()) editChatDTO: EditChatDTO,
+  ): IResponsePromise<IChat> {
+    const result = await this.chatService.editChat(editChatDTO);
+    return ResultOutput.success(result);
+  }
+
   @Post('addUserToChat')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
@@ -47,13 +58,6 @@ export class ChatController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   deleteUserFromChat(): any {
-    return ResultOutput.success({});
-  }
-
-  @Post('edit')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
-  editChat(): any {
     return ResultOutput.success({});
   }
 

@@ -6,6 +6,7 @@ import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import { IChat, IDeleteChatResponse } from './interfaces/chat.interface';
 import { DeleteChatDTO } from './dto/delete-participants.dto';
+import { EditChatDTO } from './dto/edit-chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -49,6 +50,15 @@ export class ChatService {
     }
 
     return { deletedChatId: body.chatId };
+  }
+
+  async editChat(body: EditChatDTO): Promise<IChat> {
+    const { chatId, newName } = body;
+    await this.chatsRepository
+      .update(
+        { id: chatId }, { name: newName },
+      );
+    return await this.chatsRepository.findOne({ id: chatId });
   }
 }
 
