@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class IDeleteMessagesDTO {
+export class DeleteMessagesDTO {
   @ApiProperty()
   messageId: number
 }

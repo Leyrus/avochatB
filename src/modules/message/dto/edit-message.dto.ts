@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class IEditMessageDTO {
+export class EditMessageDTO {
   @ApiProperty()
   messageId: number
 

@@ -17,18 +17,17 @@ import { AuthService } from './auth.service';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
+  constructor(private readonly authService: AuthService) {}
+
+  @Get('/confirm')
+  async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): IResponsePromise<boolean> {
+    const result = await this.authService.confirm(query.token);
+    return ResultOutput.success(result);
   }
 
   @Post('/signUp')
   async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): IResponsePromise<boolean> {
     const result = await this.authService.signUp(createUserDto);
-    return ResultOutput.success(result);
-  }
-
-  @Get('/confirm')
-  async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): IResponsePromise<boolean> {
-    const result = await this.authService.confirm(query.token);
     return ResultOutput.success(result);
   }
 
