@@ -1,5 +1,12 @@
 export class ResultOutput {
-    static success = (data: any) => ({ ok: true, data })
+  static success = (data: any): any => ({
+    ok: true,
+    data,
+  });
 
-	static error = (error: string) => ({ ok: false, data: null, message: error })
+  static error = (errorMessage: string): any => ({
+    ok: false,
+    data: null,
+    errorMessage,
+  });
 }

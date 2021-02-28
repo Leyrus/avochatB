@@ -1,35 +1,47 @@
-## Description
+# Description
 
-Avochat backend
+Nest [docs](https://github.com/nestjs/nest)
 
 ## Installation
-
+1. Поднять базу данных postgres, при необходимости установить.<br>
+Для этого нужно выполнить все скрпипты из init.sql в консоли psql. 
 ```bash
-$ npm install
+# Войти в консоль psql
+# windows:
+psql -U postgres
+# linux:
+sudo -u psql -u postgres
+```
+2. Добавить файл .env и ormconfig.json в корень приложения.<br>
+Примеры есть в config-examples/
+3. Установить зависимости
+```bash
+yarn install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+yarn start
 
 # watch mode
-$ npm run start:dev
+yarn start:dev
 
 # production mode
-$ npm run start:prod
+yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+yarn test
 
 # e2e tests
-$ npm run test:e2e
+yarn test:e2e
 
 # test coverage
-$ npm run test:cov
-```
+yarn test:cov
+``
+

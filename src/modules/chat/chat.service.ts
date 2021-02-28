@@ -1,156 +1,140 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Chat } from '../../entities/chat.entity';
-import { User } from '../../entities/user.entity';
-import { ResultOutput } from '../../utils/response';
-import {
-    IAddUserDTO,
-    ICreateChatDTO,
-    IDeleteChatDTO,
-    IDeleteUserDTO,
-    IEditChatNameDTO,
-    IGetUsersDTO
-} from './chat.interface';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../user/entities/user.entity';
+import { IReadableUser } from '../user/interfaces/user.interface';
+import { ChatEntity } from './entities/chat.entity';
+import { CreateChatDTO } from './dto/create-chat.dto';
+import { IChat, IDeleteChatRes } from './interfaces/chat.interface';
+import { DeleteChatDTO } from './dto/delete-participants.dto';
+import { EditChatDTO } from './dto/edit-chat.dto';
+import { AddParticipantDTO } from './dto/add-participant.dto';
+import { DeleteParticipantDTO } from './dto/delete-participant.dto';
 
 @Injectable()
 export class ChatService {
-    constructor(
-        @InjectRepository(Chat)
-        private chatsRepository: Repository<Chat>,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>
-    ) {}
+  constructor(
+    @InjectRepository(ChatEntity)
+    private chatsRepository: Repository<ChatEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+  ) {}
 
-    private logger: Logger = new Logger('ChatService');
+  async getParticipants(chatId: number): Promise<IReadableUser[]> {
+    const chat = await this.chatsRepository.findOne({
+      id: chatId,
+    },{
+      relations: ['users'],
+    });
+    if(!chat) {
+      throw new BadRequestException('Chat not found');
+    }
+    return chat.users.map(user => {
+      user.isOnline = !!user.socketClientId;
+      delete user.socketClientId;
+      delete user.password;
 
-    async createChat(body: ICreateChatDTO) {
-        const user = await this.usersRepository.findOne({
-            login: body.login,
-        }, { relations: ['chats'] });
+      return user;
+    });
+  }
 
-        if(!user) {
-            return ResultOutput.error('User not found');
-        }
+  async createChat(body: CreateChatDTO, userId: number): Promise<IChat> {
+    const user = await this.usersRepository.findOne({
+      id: userId,
+    }, { relations: ['chats'] });
 
-        const newChat = await this.chatsRepository
-            .save({ name: body.chatName, userOwnerId: user.userId });
-
-        await this.usersRepository.save({
-            ...user,
-            chats: [...user.chats, newChat],
-        });
-
-        this.logger.log(`newChat: ${JSON.stringify(newChat)}`);
-
-        return ResultOutput.success(newChat);
+    if(!user) {
+      throw new BadRequestException('User not found');
     }
 
-    async deleteChat(body: IDeleteChatDTO) {
-        await this.chatsRepository
-            .createQueryBuilder('chat')
-            .delete()
-            .from(Chat)
-            .where('chatId = :chatId', { chatId: body.chatId })
-            .execute();
+    const newChat: IChat = await this.chatsRepository
+      .save({ name: body.chatName, userOwnerId: user.id });
 
-        this.logger.log(`deletedChatId: ${body.chatId}`);
+    await this.usersRepository.save({
+      ...user,
+      chats: [...user.chats, newChat],
+    });
 
-        return ResultOutput.success({ deletedChatId: body.chatId });
+    return newChat;
+  }
+
+  async deleteChat(body: DeleteChatDTO): Promise<IDeleteChatRes> {
+    const result = await this.chatsRepository
+      .createQueryBuilder('chat')
+      .delete()
+      .from(ChatEntity)
+      .where('id = :chatId', { chatId: body.chatId })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new BadRequestException('Chat with this id was not found');
     }
 
-    async editChatName(body: IEditChatNameDTO) {
-        if(!body.chatId) {
-            return ResultOutput.error('There is no chatId');
-        }
-        if(!body.newChatName) {
-            return ResultOutput.error('There is no newChatName');
-        }
-        await this.chatsRepository.update({ chatId: body.chatId }, {
-            name: body.newChatName,
-        });
+    return { deletedChatId: body.chatId };
+  }
 
-        return ResultOutput.success(body);
+  async editChat(body: EditChatDTO): Promise<IChat> {
+    const { chatId, newName } = body;
+    await this.chatsRepository
+      .update(
+        { id: chatId }, { name: newName },
+      );
+    return await this.chatsRepository.findOne({ id: chatId });
+  }
+
+  async addParticipantToChat(body: AddParticipantDTO) {
+    const user = await this.usersRepository.findOne({
+      login: body.login,
+    }, { relations: ['chats'] });
+
+    if(!user) {
+      throw new BadRequestException('User not found');
     }
 
-    async addUser(body: IAddUserDTO) {
-        const user = await this.usersRepository.findOne({
-            login: body.login,
-        }, { relations: ['chats'] });
+    const chat = await this.chatsRepository.findOne({
+      id: body.chatId,
+    });
 
-        if(!user) {
-            return ResultOutput.error('User not found');
-        }
-
-        const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
-
-        if(!chat) {
-            return ResultOutput.error('Chat not found');
-        }
-
-        await this.usersRepository.save({
-            ...user,
-            chats: [...user.chats, chat],
-        });
-
-        const response = {
-            addedChatId: chat.chatId,
-            addedUserId: user.userId,
-        };
-
-        this.logger.log(`addedUserToChat: ${response}`);
-
-        return ResultOutput.success(response);
+    if(!chat) {
+      throw new BadRequestException('Chat not found');
     }
 
-    async deleteUser(body: IDeleteUserDTO) {
-        const user = await this.usersRepository.findOne({
-            userId: body.userId,
-        }, { relations: ['chats'] });
+    await this.usersRepository.save({
+      ...user,
+      chats: [...user.chats, chat],
+    });
 
-        if(!user) {
-            return ResultOutput.error('User not found');
-        }
+    return {
+      addedChatId: chat.id,
+      addedUserId: user.id,
+    };
+  }
 
-        const chat = await this.chatsRepository.findOne({ chatId: body.chatId });
+  async deleteParticipantFromChat(body: DeleteParticipantDTO) {
+    const user = await this.usersRepository.findOne({
+      login: body.login,
+    }, { relations: ['chats'] });
 
-        if(!chat) {
-            return ResultOutput.error('Chat not found');
-        }
-
-        await this.usersRepository.save({
-            ...user,
-            chats: user.chats.filter(innerChat => innerChat.chatId !== chat.chatId),
-        });
-        const response = {
-            deletedChatId: chat.chatId,
-            deletedUserId: user.userId,
-        };
-
-        this.logger.log(`deleteUserFromChat: ${response}`);
-
-        return ResultOutput.success(response);
+    if(!user) {
+      throw new BadRequestException('User not found');
     }
 
-    async getUsers(body: IGetUsersDTO) {
-        const chat = await this.chatsRepository.findOne({
-            chatId: body.chatId,
-        },{
-            relations: ['users'],
-        });
-        if(!chat) {
-            return ResultOutput.error('Chat not found');
-        }
-        const chatUsers = chat.users.map(user => {
-            user.isOnline = !!user.socketClientId;
-            delete user.password;
-            delete user.socketClientId;
+    const chat = await this.chatsRepository
+      .findOne({ id: body.chatId });
 
-            return user;
-        });
-
-        this.logger.log(`chatUsers: ${chatUsers}`);
-
-        return ResultOutput.success(chatUsers);
+    if(!chat) {
+      throw new BadRequestException('Chat not found');
     }
+
+    await this.usersRepository.save({
+      ...user,
+      chats: user.chats
+        .filter(innerChat => innerChat.id !== chat.id),
+    });
+    return {
+      deletedChatId: chat.id,
+      deletedUserId: user.id,
+    };
+  }
 }
+
