@@ -37,12 +37,16 @@ export class ChatService {
   }
 
   async deleteChat(body: DeleteChatDTO): Promise<IDeleteChatResponse> {
-    await this.chatsRepository
+    const result = await this.chatsRepository
       .createQueryBuilder('chat')
       .delete()
       .from(ChatEntity)
       .where('id = :chatId', { chatId: body.chatId })
       .execute();
+
+    if (result.affected === 0) {
+      throw new BadRequestException('Chat with this id was not found');
+    }
 
     return { deletedChatId: body.chatId };
   }
