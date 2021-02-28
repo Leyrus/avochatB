@@ -17,6 +17,7 @@ export interface IUser {
 export interface IUserAuth {
   id: number,
   status: string,
+  withChats: boolean,
   roles: string,
   iat: number,
   exp: number,

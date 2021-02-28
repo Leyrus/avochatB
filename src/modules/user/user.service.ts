@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions } from 'typeorm/browser';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IUser, IReadableUser } from './interfaces/user.interface';
+import { IUser, IReadableUser, IUserAuth } from './interfaces/user.interface';
 import { userSensitiveFieldsEnum } from './enums/protected-fields.enum';
 import { roleEnum } from './enums/role.enum';
 import { statusEnum } from './enums/status.enum';
@@ -59,8 +59,8 @@ export class UserService {
       id, options);
   }
 
-  async findReadableUser(id: number): Promise<IReadableUser> {
-    const user = await this.findById(id, true);
+  async findReadableUser(authUser: IUserAuth): Promise<IReadableUser> {
+    const user = await this.findById(authUser.id, authUser.withChats);
     return _.omit(user, Object.values(userSensitiveFieldsEnum)) as IReadableUser;
   }
 }

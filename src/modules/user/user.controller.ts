@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards, ValidationPipe } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../components/decorators/get-user.decorator';
 import { IResponsePromise } from '../../types';
@@ -19,9 +19,10 @@ export class UserController {
 
   @Get('get')
   @UseGuards(AuthGuard())
+  @ApiQuery({ name: 'withChats', type: 'boolean', required: false })
   @ApiBearerAuth()
   async getUser(@GetUser() user: IUserAuth): IResponsePromise<IReadableUser> {
-    const readableUser = await this.userService.findReadableUser(user.id);
+    const readableUser = await this.userService.findReadableUser(user);
     return ResultOutput.success(readableUser);
   }
 
