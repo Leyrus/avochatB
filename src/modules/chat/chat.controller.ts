@@ -3,6 +3,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { ResultOutput } from '../../utils/response';
 import { IResponsePromise } from '../../types';
+import { GetUser } from '../../components/decorators/get-user.decorator';
+import { IUserAuth } from '../user/interfaces/user.interface';
 import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import { IChat, IDeleteChatResponse } from './interfaces/chat.interface';
@@ -17,9 +19,10 @@ export class ChatController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   async createChat(
+    @GetUser() user: IUserAuth,
     @Body(new ValidationPipe()) createChatDTO: CreateChatDTO,
   ): IResponsePromise<IChat> {
-    const result = await this.chatService.createChat(createChatDTO);
+    const result = await this.chatService.createChat(createChatDTO, user.id);
     return ResultOutput.success(result);
   }
 

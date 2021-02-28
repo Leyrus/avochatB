@@ -16,9 +16,9 @@ export class ChatService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async createChat(body: CreateChatDTO) {
+  async createChat(body: CreateChatDTO, userId: number) {
     const user = await this.usersRepository.findOne({
-      login: body.login,
+      id: userId,
     }, { relations: ['chats'] });
 
     if(!user) {
