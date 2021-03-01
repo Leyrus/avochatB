@@ -60,12 +60,15 @@ export class AuthService {
     }
   }
 
-  async signIn({ login, password }: SignInDto): Promise<IReadableUser> {
+  async signIn(signInDto: SignInDto, checkPassword = true): Promise<IReadableUser> {
+    const { login, password } = signInDto;
     const user = isEmail(login)
       ? await this.userService.findByEmail(login)
       : await this.userService.findByLogin(login);
 
-    await this.checkIsValidPassword(password, user);
+    if (checkPassword) {
+      await this.checkIsValidPassword(password, user);
+    }
 
     const token = await this.signUser(user);
     const readableUser = user as IReadableUser;
@@ -112,7 +115,7 @@ export class AuthService {
     return true;
   }
 
-  async confirm(token: string): Promise<boolean> {
+  async confirm(token: string): Promise<IReadableUser> {
     const data = await this.verifyToken(token);
     const user = await this.userService.findById(data.id);
 
@@ -121,7 +124,8 @@ export class AuthService {
     if (user && user.status === statusEnum.pending) {
       user.status = statusEnum.active;
       await this.userService.update(user.id, user);
-      return true;
+      const signInDto = { login: user.login };
+      return await this.signIn(signInDto, false);
     }
     throw new BadRequestException('Confirmation error');
   }

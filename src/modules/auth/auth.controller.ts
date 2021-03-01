@@ -20,7 +20,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('/confirm')
-  async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): IResponsePromise<boolean> {
+  async confirm(
+    @Query(new ValidationPipe()) query: ConfirmAccountDto,
+  ): IResponsePromise<IReadableUser> {
     const result = await this.authService.confirm(query.token);
     return ResultOutput.success(result);
   }
