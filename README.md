@@ -4,13 +4,13 @@ Nest [docs](https://github.com/nestjs/nest)
 
 ## Installation
 1. Поднять базу данных postgres, при необходимости установить.<br>
-Для этого нужно выполнить все скрпипты из init.sql в консоли psql. 
+Для этого нужно выполнить все скрпипты из init.sql в консоли psql.
 ```bash
 # Войти в консоль psql
 # windows:
 psql -U postgres
 # linux:
-sudo -u psql -u postgres
+sudo -u postgres psql
 ```
 2. Добавить файл .env и ormconfig.json в корень приложения.<br>
 Примеры есть в config-examples/
