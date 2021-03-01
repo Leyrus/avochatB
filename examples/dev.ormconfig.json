@@ -1,0 +1,20 @@
+{
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "avochat_main_owner",
+    "password": "121355qQ",
+    "database": "avochat",
+    "entities": [
+        "dist/**/*.entity{.ts,.js}"
+    ],
+    "synchronize": true,
+    "migrationsRun": true,
+    "logging": true,
+    "migrations": [
+        "src/migrations/*{.ts,.js}"
+    ],
+    "cli": {
+        "migrationsDir": "db/migrations"
+    }
+}
