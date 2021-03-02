@@ -8,7 +8,7 @@ import { AppModule } from './app.module';
 import { CustomLogger } from './common/middleware/loggerService';
 import { AllExceptionsFilter } from './common/middleware/allExeptions.filter';
 import { config, isProd } from './config';
-import { TransformInterceptor } from './interceptors/transform-interceptor';
+import { TransformInterceptor } from './common/interceptors/transform-interceptor';
 
 const getHttpsOptions = () =>
  isProd

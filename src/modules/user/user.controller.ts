@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from '../../components/decorators/get-user.decorator';
+import { GetUser } from '../../common/decorators/get-user.decorator';
 import { AuthService } from '../auth/auth.service';
 import { IReadableUser, IUserAuth } from './interfaces/user.interface';
 import { UserService } from './user.service';

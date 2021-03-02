@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from '../../components/decorators/get-user.decorator';
+import { GetUser } from '../../common/decorators/get-user.decorator';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
 import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';

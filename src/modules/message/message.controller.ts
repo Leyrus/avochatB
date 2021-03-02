@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from '../../components/decorators/get-user.decorator';
+import { GetUser } from '../../common/decorators/get-user.decorator';
 import { IUserAuth } from '../user/interfaces/user.interface';
 import { MessageService } from './message.service';
 import { SendMessagesDTO } from './dto/send-message.dto';
