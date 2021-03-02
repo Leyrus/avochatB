@@ -1,8 +1,6 @@
 import { Body, Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { ResultOutput } from '../../utils/response';
-import { IResponsePromise } from '../../types';
 import { GetUser } from '../../components/decorators/get-user.decorator';
 import { IUserAuth } from '../user/interfaces/user.interface';
 import { MessageService } from './message.service';
@@ -20,41 +18,37 @@ export class MessageController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiQuery({ name: 'chatId', type: 'number', required: true })
-  async getMessage(
+  getMessage(
     @Query('chatId') chatId,
-  ): IResponsePromise<IMessage[]> {
-    const result = await this.messageService.getMessages(chatId);
-    return ResultOutput.success(result);
+  ): Promise<IMessage[]> {
+    return this.messageService.getMessages(chatId);
   }
 
   @Post('send')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async sendMessage(
+  sendMessage(
     @GetUser() user: IUserAuth,
     @Body(new ValidationPipe()) sendMessageDto: SendMessagesDTO,
-  ): IResponsePromise<IMessage> {
-    const result = await this.messageService.sendMessage(sendMessageDto, user.id);
-    return ResultOutput.success(result);
+  ): Promise<IMessage> {
+    return this.messageService.sendMessage(sendMessageDto, user.id);
   }
 
   @Post('delete')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async deleteMessage(
+  deleteMessage(
     @Body(new ValidationPipe()) deleteMessageDto: DeleteMessagesDTO,
-  ): IResponsePromise<IDeleteMessageRes> {
-    const result = await this.messageService.deleteMessage(deleteMessageDto);
-    return ResultOutput.success(result);
+  ): Promise<IDeleteMessageRes> {
+    return this.messageService.deleteMessage(deleteMessageDto);
   }
 
   @Post('edit')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async editMessage(
+  editMessage(
     @Body(new ValidationPipe()) editMessageDto: EditMessageDTO,
-  ): IResponsePromise<IMessage> {
-    const result = await this.messageService.editMessage(editMessageDto);
-    return ResultOutput.success(result);
+  ): Promise<IMessage> {
+    return this.messageService.editMessage(editMessageDto);
   }
 }

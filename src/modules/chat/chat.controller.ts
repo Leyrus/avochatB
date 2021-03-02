@@ -1,8 +1,6 @@
 import { Body, Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { ResultOutput } from '../../utils/response';
-import { IResponsePromise } from '../../types';
 import { GetUser } from '../../components/decorators/get-user.decorator';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
 import { ChatService } from './chat.service';
@@ -24,22 +22,20 @@ export class ChatController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiQuery({ name: 'chatId', type: 'number', required: true })
-  async getParticipants(
+  getParticipants(
     @Query('chatId') chatId,
-  ): IResponsePromise<IReadableUser[]> {
-    const result = await this.chatService.getParticipants(chatId);
-    return ResultOutput.success(result);
+  ): Promise<IReadableUser[]> {
+    return this.chatService.getParticipants(chatId);
   }
 
   @Post('create')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async createChat(
+  createChat(
     @GetUser() user: IUserAuth,
     @Body(new ValidationPipe()) createChatDTO: CreateChatDTO,
-  ): IResponsePromise<IChat> {
-    const result = await this.chatService.createChat(createChatDTO, user.id);
-    return ResultOutput.success(result);
+  ): Promise<IChat> {
+    return this.chatService.createChat(createChatDTO, user.id);
   }
 
   @Post('delete')
@@ -47,42 +43,34 @@ export class ChatController {
   @ApiBearerAuth()
   async deleteChat(
     @Body(new ValidationPipe()) deleteChatDTO: DeleteChatDTO,
-  ): IResponsePromise<IDeleteChatRes> {
-    const result = await this.chatService.deleteChat(deleteChatDTO);
-    return ResultOutput.success(result);
+  ): Promise<IDeleteChatRes> {
+    return this.chatService.deleteChat(deleteChatDTO);
   }
 
   @Post('edit')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async editChat(@Body(
+  editChat(@Body(
     new ValidationPipe()) editChatDTO: EditChatDTO,
-  ): IResponsePromise<IChat> {
-    const result = await this.chatService.editChat(editChatDTO);
-    return ResultOutput.success(result);
+  ): Promise<IChat> {
+    return this.chatService.editChat(editChatDTO);
   }
 
   @Post('addUserToChat')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async addParticipantToChat(
+  addParticipantToChat(
     @Body(new ValidationPipe()) addParticipantDto: AddParticipantChatDto,
-  ): IResponsePromise<IAddParticipantRes> {
-    const result = await this.chatService.addParticipantToChat(
-      addParticipantDto,
-    );
-    return ResultOutput.success(result);
+  ): Promise<IAddParticipantRes> {
+    return this.chatService.addParticipantToChat(addParticipantDto);
   }
 
   @Post('deleteUserFromChat')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async deleteParticipantFromChat(
+  deleteParticipantFromChat(
     @Body(new ValidationPipe()) deleteParticipantDto: DeleteParticipantChatDto,
-  ): IResponsePromise<IDeleteParticipantRes> {
-    const result = await this.chatService.deleteParticipantFromChat(
-      deleteParticipantDto,
-    );
-    return ResultOutput.success(result);
+  ): Promise<IDeleteParticipantRes> {
+    return this.chatService.deleteParticipantFromChat(deleteParticipantDto);
   }
 }

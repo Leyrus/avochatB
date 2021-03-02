@@ -1,6 +1,12 @@
 import { AuthGuard } from '@nestjs/passport';
 import {
-  Controller, Post, Body, ValidationPipe, Get, Query, UseGuards,
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  Get,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
@@ -28,31 +34,34 @@ export class AuthController {
   }
 
   @Post('/signUp')
-  async signUp(@Body(new ValidationPipe()) createUserDto: SingUpAuthDto): IResponsePromise<boolean> {
+  async signUp(
+    @Body(new ValidationPipe()) createUserDto: SingUpAuthDto,
+  ): IResponsePromise<boolean> {
     const result = await this.authService.signUp(createUserDto);
     return ResultOutput.success(result);
   }
 
   @Post('/signIn')
-  async signIn(@Body(new ValidationPipe()) signInDto: SignInAuthDto): Promise<IReadableUser> {
-    const result = await this.authService.signIn(signInDto);
-    return ResultOutput.success(result);
+  signIn(
+    @Body(new ValidationPipe()) signInDto: SignInAuthDto,
+  ): Promise<IReadableUser> {
+    return this.authService.signIn(signInDto);
   }
 
   @Post('/forgotPassword')
-  async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordAuthDto): Promise<boolean> {
-    const result = await this.authService.forgotPassword(forgotPasswordDto);
-    return ResultOutput.success(result);
+  forgotPassword(
+    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordAuthDto,
+  ): Promise<boolean> {
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('/changePassword')
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  async changePassword(
+  changePassword(
     @GetUser() user: IUserAuth,
     @Body(new ValidationPipe()) changePasswordDto: ChangePasswordAuthDto,
   ): Promise<boolean> {
-    const result = await this.authService.changePassword(user.id, changePasswordDto);
-    return ResultOutput.success(result);
+    return this.authService.changePassword(user.id, changePasswordDto);
   }
 }
