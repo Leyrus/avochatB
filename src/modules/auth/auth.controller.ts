@@ -4,14 +4,14 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ResultOutput } from '../../utils/response';
 import { IResponsePromise } from '../../types';
 import { GetUser } from '../../components/decorators/get-user.decorator';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { SignInDto } from './dto/signin.dto';
+import { SingUpAuthDto } from './dto/sing-up-auth.dto';
+import { ConfirmAccountAuthDto } from './dto/confirm-account-auth.dto';
+import { ForgotPasswordAuthDto } from './dto/forgot-password-auth.dto';
+import { ChangePasswordAuthDto } from './dto/change-password-auth.dto';
+import { SignInAuthDto } from './dto/sign-in-auth.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -21,26 +21,26 @@ export class AuthController {
 
   @Get('/confirm')
   async confirm(
-    @Query(new ValidationPipe()) query: ConfirmAccountDto,
+    @Query(new ValidationPipe()) query: ConfirmAccountAuthDto,
   ): IResponsePromise<IReadableUser> {
     const result = await this.authService.confirm(query.token);
     return ResultOutput.success(result);
   }
 
   @Post('/signUp')
-  async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): IResponsePromise<boolean> {
+  async signUp(@Body(new ValidationPipe()) createUserDto: SingUpAuthDto): IResponsePromise<boolean> {
     const result = await this.authService.signUp(createUserDto);
     return ResultOutput.success(result);
   }
 
   @Post('/signIn')
-  async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IReadableUser> {
+  async signIn(@Body(new ValidationPipe()) signInDto: SignInAuthDto): Promise<IReadableUser> {
     const result = await this.authService.signIn(signInDto);
     return ResultOutput.success(result);
   }
 
   @Post('/forgotPassword')
-  async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto): Promise<boolean> {
+  async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordAuthDto): Promise<boolean> {
     const result = await this.authService.forgotPassword(forgotPasswordDto);
     return ResultOutput.success(result);
   }
@@ -50,7 +50,7 @@ export class AuthController {
   @UseGuards(AuthGuard())
   async changePassword(
     @GetUser() user: IUserAuth,
-    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
+    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordAuthDto,
   ): Promise<boolean> {
     const result = await this.authService.changePassword(user.id, changePasswordDto);
     return ResultOutput.success(result);

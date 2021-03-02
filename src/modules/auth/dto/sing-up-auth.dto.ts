@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import { Lang } from '../../../types/enum/lang';
 
-export class CreateUserDto {
+export class SingUpAuthDto {
   @ApiProperty()
   @IsEmail()
   readonly email: string;
@@ -14,10 +15,10 @@ export class CreateUserDto {
   @ApiProperty()
   readonly name?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, enum: Lang })
   @Matches(/[a-z]{2}/,
     { message: 'Not valid lang code' })
-  readonly lang?: string = 'en';
+  readonly lang?: Lang = Lang.en;
 
   @ApiProperty()
   @IsString()

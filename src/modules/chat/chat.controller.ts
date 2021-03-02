@@ -10,10 +10,10 @@ import { CreateChatDTO } from './dto/create-chat.dto';
 import {
   IChat, IDeleteChatRes, IAddParticipantRes, IDeleteParticipantRes,
 } from './interfaces/chat.interface';
-import { DeleteChatDTO } from './dto/delete-participants.dto';
+import { DeleteChatDTO } from './dto/delete-chat.dto';
 import { EditChatDTO } from './dto/edit-chat.dto';
-import { AddParticipantDTO } from './dto/add-participant.dto';
-import { DeleteParticipantDTO } from './dto/delete-participant.dto';
+import { AddParticipantChatDto } from './dto/add-participant-chat.dto';
+import { DeleteParticipantChatDto } from './dto/delete-participant-chat.dto';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -66,7 +66,7 @@ export class ChatController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   async addParticipantToChat(
-    @Body(new ValidationPipe()) addParticipantDto: AddParticipantDTO,
+    @Body(new ValidationPipe()) addParticipantDto: AddParticipantChatDto,
   ): IResponsePromise<IAddParticipantRes> {
     const result = await this.chatService.addParticipantToChat(
       addParticipantDto,
@@ -78,7 +78,7 @@ export class ChatController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   async deleteParticipantFromChat(
-    @Body(new ValidationPipe()) deleteParticipantDto: DeleteParticipantDTO,
+    @Body(new ValidationPipe()) deleteParticipantDto: DeleteParticipantChatDto,
   ): IResponsePromise<IDeleteParticipantRes> {
     const result = await this.chatService.deleteParticipantFromChat(
       deleteParticipantDto,

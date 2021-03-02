@@ -6,10 +6,10 @@ import { IReadableUser } from '../user/interfaces/user.interface';
 import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import { IChat, IDeleteChatRes } from './interfaces/chat.interface';
-import { DeleteChatDTO } from './dto/delete-participants.dto';
+import { DeleteChatDTO } from './dto/delete-chat.dto';
 import { EditChatDTO } from './dto/edit-chat.dto';
-import { AddParticipantDTO } from './dto/add-participant.dto';
-import { DeleteParticipantDTO } from './dto/delete-participant.dto';
+import { AddParticipantChatDto } from './dto/add-participant-chat.dto';
+import { DeleteParticipantChatDto } from './dto/delete-participant-chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -82,7 +82,7 @@ export class ChatService {
     return await this.chatsRepository.findOne({ id: chatId });
   }
 
-  async addParticipantToChat(body: AddParticipantDTO) {
+  async addParticipantToChat(body: AddParticipantChatDto) {
     const user = await this.usersRepository.findOne({
       login: body.login,
     }, { relations: ['chats'] });
@@ -110,7 +110,7 @@ export class ChatService {
     };
   }
 
-  async deleteParticipantFromChat(body: DeleteParticipantDTO) {
+  async deleteParticipantFromChat(body: DeleteParticipantChatDto) {
     const user = await this.usersRepository.findOne({
       login: body.login,
     }, { relations: ['chats'] });

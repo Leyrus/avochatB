@@ -13,7 +13,6 @@ import { JwtService } from '@nestjs/jwt';
 import { isEmail } from 'class-validator';
 import { UserService } from '../user/user.service';
 import { TokenService } from '../token/token.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 import { CreateUserTokenDto } from '../token/dto/create-user-token.dto';
 import { IUser, IReadableUser } from '../user/interfaces/user.interface';
 import { MailService } from '../mail/mail.service';
@@ -22,10 +21,11 @@ import { userSensitiveFieldsEnum } from '../user/enums/protected-fields.enum';
 import { config } from '../../config';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { UserEntity } from '../user/entities/user.entity';
+import { SingUpAuthDto } from './dto/sing-up-auth.dto';
 import { ITokenPayload } from './interfaces/token-payload.interface';
-import { SignInDto } from './dto/signin.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { SignInAuthDto } from './dto/sign-in-auth.dto';
+import { ChangePasswordAuthDto } from './dto/change-password-auth.dto';
+import { ForgotPasswordAuthDto } from './dto/forgot-password-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +42,7 @@ export class AuthService {
     this.clientAppUrl = config.feAppUrl;
   }
 
-  async signUp(createUserDto: CreateUserDto): Promise<boolean> {
+  async signUp(createUserDto: SingUpAuthDto): Promise<boolean> {
     const user = await this.userService.create(createUserDto);
     await this.sendConfirmation(user);
     return true;
@@ -60,7 +60,7 @@ export class AuthService {
     }
   }
 
-  async signIn(signInDto: SignInDto, checkPassword = true): Promise<IReadableUser> {
+  async signIn(signInDto: SignInAuthDto, checkPassword = true): Promise<IReadableUser> {
     const { login, password } = signInDto;
     const user = isEmail(login)
       ? await this.userService.findByEmail(login)
@@ -104,7 +104,7 @@ export class AuthService {
     return token;
   }
 
-  async changePassword(userId: number, changePasswordDto: ChangePasswordDto): Promise<boolean> {
+  async changePassword(userId: number, changePasswordDto: ChangePasswordAuthDto): Promise<boolean> {
     const user = await this.userService.findById(userId);
     const { oldPassword, newPassword } = changePasswordDto;
 
@@ -169,7 +169,7 @@ export class AuthService {
     return true;
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<boolean> {
+  async forgotPassword(forgotPasswordDto: ForgotPasswordAuthDto): Promise<boolean> {
     const user = await this.userService.findByEmail(forgotPasswordDto.email);
     if (!user) {
       throw new BadRequestException('Invalid email');
