@@ -14,7 +14,7 @@ export class CreateUserDto {
   @ApiProperty()
   readonly name?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Matches(/[a-z]{2}/,
     { message: 'Not valid lang code' })
   readonly lang?: string = 'en';
