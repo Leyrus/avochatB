@@ -1,7 +1,7 @@
 interface IResult {
   ok: boolean,
   statusCode: number,
-  timestamp: string,
+  timestamp?: string,
   path: string,
   data: any,
   error?: any,
@@ -12,7 +12,6 @@ export class ResultOutput {
     ok: true,
     statusCode,
     path,
-    timestamp: new Date().toISOString(),
     data,
   });
 

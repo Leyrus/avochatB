@@ -130,6 +130,13 @@ export class AuthService {
     throw new BadRequestException('Confirmation error');
   }
 
+  async logout(token): Promise<boolean> {
+    const correctToken = token.split(' ')[1];
+    const data = await this.verifyToken(correctToken);
+    await this.tokenService.delete(data.id, correctToken);
+    return true;
+  }
+
   async sendConfirmation(user: UserEntity): Promise<boolean> {
     const token = await this.signUser(user, false);
     const confirmLink = `${this.clientAppUrl}/confirm?token=${token}`;

@@ -6,7 +6,7 @@ import {
   ValidationPipe,
   Get,
   Query,
-  UseGuards,
+  UseGuards, Headers,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
@@ -28,6 +28,15 @@ export class AuthController {
     @Query(new ValidationPipe()) query: ConfirmAccountAuthDto,
   ): Promise<IReadableUser> {
     return this.authService.confirm(query.token);
+  }
+
+  @Post('/logout')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  logout(
+    @Headers('authorization') token,
+  ): Promise<boolean> {
+    return this.authService.logout(token);
   }
 
   @Post('/signUp')
