@@ -131,9 +131,8 @@ export class AuthService {
   }
 
   async logout(token): Promise<boolean> {
-    const correctToken = token.split(' ')[1];
-    const data = await this.verifyToken(correctToken);
-    await this.tokenService.delete(data.id, correctToken);
+    const data = await this.verifyToken(token);
+    await this.tokenService.delete(data.id, token);
     return true;
   }
 

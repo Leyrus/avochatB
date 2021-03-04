@@ -6,11 +6,12 @@ import {
   ValidationPipe,
   Get,
   Query,
-  UseGuards, Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
 import { GetUser } from '../../common/decorators/get-user.decorator';
+import { GetToken } from '../../common/decorators/get-token.decarator';
 import { SingUpAuthDto } from './dto/sing-up-auth.dto';
 import { ConfirmAccountAuthDto } from './dto/confirm-account-auth.dto';
 import { ForgotPasswordAuthDto } from './dto/forgot-password-auth.dto';
@@ -34,7 +35,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   logout(
-    @Headers('authorization') token,
+    @GetToken() token: string,
   ): Promise<boolean> {
     return this.authService.logout(token);
   }
