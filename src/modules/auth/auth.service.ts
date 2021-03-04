@@ -63,8 +63,8 @@ export class AuthService {
   async signIn(signInDto: SignInAuthDto, checkPassword = true): Promise<IReadableUser> {
     const { login, password } = signInDto;
     const user = isEmail(login)
-      ? await this.userService.findByEmail(login)
-      : await this.userService.findByLogin(login);
+      ? await this.userService.findByEmail(login, true)
+      : await this.userService.findByLogin(login, true);
 
     if (checkPassword) {
       await this.checkIsValidPassword(password, user);
