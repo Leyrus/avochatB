@@ -3,9 +3,12 @@ import * as path from 'path';
 import { LoggerService } from '@nestjs/common';
 
 export class CustomLogger implements LoggerService {
-  private getLogsFile = () => process.env.NODE_ENV === 'production'
-    ? path.resolve(__dirname, `../../logs/${new Date().toString().substr(4, 11).replace(/ /g, '_')}.log`)
-    : path.resolve(__dirname, '../../../logs/logs.log');
+  private getLogsFile = () => {
+    const fileName = `${new Date().toString().substr(4, 11).replace(/ /g, '_')}.log`;
+    return process.env.NODE_ENV === 'production'
+      ? path.resolve(__dirname, `../../logs/${fileName}`)
+      : path.resolve(__dirname, `../../../logs/${fileName}`);
+  };
 
   private saveLog = (message, context) => {
     const logMessage = `${new Date().toString().substr(4, 20)} - [${context}]: ${message}\n`;
