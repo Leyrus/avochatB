@@ -32,12 +32,20 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<UserEntity> {
-    return await this.usersRepository.findOne({ where: { email } });
+  async findByEmail(email: string, withChats = false): Promise<UserEntity> {
+    const options: any = {};
+    if (withChats) {
+      options.relations = ['chats'];
+    }
+    return await this.usersRepository.findOne({ email }, options);
   }
 
-  async findByLogin(login: string): Promise<UserEntity> {
-    return await this.usersRepository.findOne({ where: { login } });
+  async findByLogin(login: string, withChats = false): Promise<UserEntity> {
+    const options: any = {};
+     if (withChats) {
+       options.relations = ['chats'];
+     }
+    return await this.usersRepository.findOne({ login }, options);
   }
 
   async update(userId: number, payload: Partial<IUser>): Promise<boolean> {

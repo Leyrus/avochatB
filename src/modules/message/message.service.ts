@@ -31,7 +31,7 @@ export class MessageService {
     }
 
     const chatUsers = users
-      .filter(user => user.chats.find(chat => chat.id === chatId));
+      .filter(user => user.chats.find(chat => chat.id === +chatId));
     const messages = await this.messagesRepository.find({ chatId });
 
     if (!messages) {
