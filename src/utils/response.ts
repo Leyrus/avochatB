@@ -1,12 +1,26 @@
+interface IResult {
+  ok: boolean,
+  statusCode: number,
+  timestamp?: string,
+  path: string,
+  data: any,
+  error?: any,
+}
+
 export class ResultOutput {
-  static success = (data: any): any => ({
+  static success = (statusCode: number, path, data: any): IResult => ({
     ok: true,
+    statusCode,
+    path,
     data,
   });
 
-  static error = (errorMessage: string): any => ({
+  static error = (statusCode, path, error: any): IResult => ({
     ok: false,
+    statusCode,
+    path,
+    timestamp: new Date().toISOString(),
     data: null,
-    errorMessage,
+    error,
   });
 }

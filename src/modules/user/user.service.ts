@@ -4,8 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions } from 'typeorm/browser';
+import { SingUpAuthDto } from '../auth/dto/sing-up-auth.dto';
 import { UserEntity } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import { IUser, IReadableUser, IUserAuth } from './interfaces/user.interface';
 import { userSensitiveFieldsEnum } from './enums/protected-fields.enum';
 import { roleEnum } from './enums/role.enum';
@@ -18,7 +18,7 @@ export class UserService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async create(createUserDto: SingUpAuthDto): Promise<UserEntity> {
     try {
       const user = this.usersRepository.create({
         ...createUserDto,
@@ -32,12 +32,20 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<UserEntity> {
-    return await this.usersRepository.findOne({ where: { email } });
+  async findByEmail(email: string, withChats = false): Promise<UserEntity> {
+    const options: any = {};
+    if (withChats) {
+      options.relations = ['chats'];
+    }
+    return await this.usersRepository.findOne({ email }, options);
   }
 
-  async findByLogin(login: string): Promise<UserEntity> {
-    return await this.usersRepository.findOne({ where: { login } });
+  async findByLogin(login: string, withChats = false): Promise<UserEntity> {
+    const options: any = {};
+     if (withChats) {
+       options.relations = ['chats'];
+     }
+    return await this.usersRepository.findOne({ login }, options);
   }
 
   async update(userId: number, payload: Partial<IUser>): Promise<boolean> {

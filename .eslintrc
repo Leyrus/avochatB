@@ -1,218 +1,231 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-        "plugin:nestjs/recommended"
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:nestjs/recommended"
+  ],
+  "plugins": [
+    "import",
+    "nestjs"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "settings": {
+    "propWrapperFunctions": [
+      // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
+      "forbidExtraProps",
+      {
+        "property": "freeze",
+        "object": "Object"
+      },
+      {
+        "property": "myFavoriteWrapper"
+      }
     ],
-    "plugins": [
-        "import",
-        "nestjs"
+    "linkComponents": [
+      // Components used as alternatives to <a> for linking, eg. <Link to={ url } />
+      "Hyperlink",
+      {
+        "name": "Link",
+        "linkAttribute": "to"
+      }
+    ]
+  },
+  "rules": {
+    "semi": [
+      "error",
+      "always"
     ],
-    "parserOptions": {
-        "ecmaVersion": 2019,
-        "sourceType": "module"
-    },
-    "env": {
-        "es6": true,
-        "node": true,
-        "jest": true
-    },
-    "settings": {
-        "propWrapperFunctions": [
-            // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
-            "forbidExtraProps",
-            {"property": "freeze", "object": "Object"},
-            {"property": "myFavoriteWrapper"}
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "no-undef": "error",
+    "eol-last": [
+      "error",
+      "always"
+    ],
+    "template-tag-spacing": [
+      "error",
+      "always"
+    ],
+    "no-multi-spaces": "error",
+    "key-spacing": [
+      "error",
+      {
+        "mode": "strict",
+        "beforeColon": false
+      }
+    ],
+    "space-in-parens": [
+      "error",
+      "never"
+    ],
+    "array-body-style": [
+      "off"
+    ],
+    "array-element-newline": [
+      "error",
+      "consistent"
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreComments": true
+      }
+    ],
+    "no-regex-spaces": "error",
+    "padding-line-between-statements": [
+      "error"
+      // { "blankLine": "always", "prev:": ["const", "let", "var"], "next": "*"},
+      // { "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]}
+    ],
+    "complexity": [
+      "error",
+      100
+    ],
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "default-case": "error",
+    "no-empty-function": "off",
+    "no-case-declarations": "off",
+    "init-declarations": [
+      "off",
+      "always"
+    ],
+    "spaced-comment": [
+      "error",
+      "always"
+    ],
+    "jsx-quotes": [
+      "error",
+      "prefer-double"
+    ],
+    "lines-between-class-members": [
+      "error",
+      "always"
+    ],
+    "lines-around-comment": [
+      "error",
+      {
+        "beforeBlockComment": true,
+        "allowBlockStart": true
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+    "no-tabs": 0,
+    "no-trailing-spaces": "error",
+    // "operator-linebreak": ["error", "none"],
+    "block-spacing": [
+      "error",
+      "always"
+    ],
+    "camelcase": "error",
+    "no-lonely-if": "error",
+    "no-mixed-spaces-and-tabs": "error",
+    "no-multi-assign": "error",
+    "padded-blocks": [
+      "error",
+      "never"
+    ],
+    "no-empty": "error",
+    "arrow-body-style": [
+      "error",
+      "as-needed"
+    ],
+    "curly": "error",
+    "brace-style": "error",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "prefer-const": "error",
+    "no-whitespace-before-property": "error",
+    "space-infix-ops": [
+      "error"
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
         ],
-        "linkComponents": [
-            // Components used as alternatives to <a> for linking, eg. <Link to={ url } />
-            "Hyperlink",
-            {"name": "Link", "linkAttribute": "to"}
-        ]
-    },
-    "rules": {
-        "semi": [
-            "error",
-            "always"
+        "pathGroups": [
+          {
+            "pattern": "@nestjs",
+            "group": "builtin",
+            "position": "before"
+          },
+          {
+            "pattern": "lodash",
+            "group": "builtin",
+            "position": "after"
+          },
+          {
+            "pattern": "typeorm",
+            "group": "builtin",
+            "position": "after"
+          },
+          {
+            "pattern": "src",
+            "group": "builtin",
+            "position": "after"
+          },
+          {
+            "pattern": "@/redux/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@/pages/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@/types/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "./styles*",
+            "group": "sibling",
+            "position": "after"
+          }
         ],
-        "quotes": [
-            "error",
-            "single",
-            {
-                "allowTemplateLiterals": true
-            }
+        "pathGroupsExcludedImportTypes": [
+          "builtin"
         ],
-        "no-undef": "error",
-        "eol-last": [
-            "error",
-            "always"
-        ],
-        "template-tag-spacing": [
-            "error",
-            "always"
-        ],
-        "no-multi-spaces": "error",
-        "key-spacing": [
-            "error",
-            {
-                "mode": "strict",
-                "beforeColon": false
-            }
-        ],
-        "space-in-parens": [
-            "error",
-            "never"
-        ],
-        "array-body-style": [
-            "off"
-        ],
-        "array-element-newline": [
-            "error",
-            "consistent"
-        ],
-        "max-len": [
-            "error",
-            {
-                "code": 120,
-                "ignoreComments": true
-            }
-        ],
-        "no-regex-spaces": "error",
-        "padding-line-between-statements": [
-            "error"
-            // { "blankLine": "always", "prev:": ["const", "let", "var"], "next": "*"},
-            // { "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]}
-        ],
-        "complexity": [
-            "error",
-            100
-        ],
-        "eqeqeq": [
-            "error",
-            "always"
-        ],
-        "default-case": "error",
-        "no-empty-function": "off",
-        "no-case-declarations": "off",
-        "init-declarations": [
-            "off",
-            "always"
-        ],
-        "spaced-comment": [
-            "error",
-            "always"
-        ],
-        "jsx-quotes": [
-            "error",
-            "prefer-double"
-        ],
-        "lines-between-class-members": [
-            "error",
-            "always"
-        ],
-        "lines-around-comment": [
-            "error",
-            {
-                "beforeBlockComment": true,
-                "allowBlockStart": true
-            }
-        ],
-        "no-multiple-empty-lines": [
-            "error",
-            {
-                "max": 1
-            }
-        ],
-        "no-trailing-spaces": "error",
-        // "operator-linebreak": ["error", "none"],
-        "block-spacing": [
-            "error",
-            "always"
-        ],
-        "camelcase": "error",
-        "no-lonely-if": "error",
-        "no-mixed-spaces-and-tabs": "error",
-        "no-multi-assign": "error",
-        "padded-blocks": [
-            "error",
-            "never"
-        ],
-        "no-empty": "error",
-        "arrow-body-style": [
-            "error",
-            "as-needed"
-        ],
-        "curly": "error",
-        "brace-style": "error",
-        "comma-dangle": [
-            "error",
-            "always-multiline"
-        ],
-        "prefer-const": "error",
-        "no-whitespace-before-property": "error",
-        "space-infix-ops": [
-            "error"
-        ],
-        "import/order": ["error",
-            {
-                "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
-                "pathGroups": [
-                    {
-                        "pattern": "@nestjs",
-                        "group": "builtin",
-                        "position": "before"
-
-                    },
-                    {
-                        "pattern": "lodash",
-                        "group": "builtin",
-                        "position": "after"
-
-                    },
-                    {
-                        "pattern": "typeorm",
-                        "group": "builtin",
-                        "position": "after"
-
-                    },
-                    {
-                        "pattern": "src",
-                        "group": "builtin",
-                        "position": "after"
-
-                    },
-                    {
-                        "pattern": "@/redux/**",
-                        "group": "internal",
-                        "position": "before"
-                    },
-                    {
-                        "pattern": "@/pages/**",
-                        "group": "internal",
-                        "position": "before"
-
-                    },
-                    {
-                        "pattern": "@/types/**",
-                        "group": "internal",
-                        "position": "before"
-                    },
-                    {
-                        "pattern": "./styles*",
-                        "group": "sibling",
-                        "position": "after"
-                    }
-                ],
-                "pathGroupsExcludedImportTypes": ["builtin"],
-                "newlines-between": "never"
-
-            }
-        ],
-        "no-duplicate-imports": "error",
-        "no-dupe-keys": "error",
-        "no-dupe-args": "error",
-        "object-curly-spacing": [
-            "error",
-            "always"
-        ]
-    }
+        "newlines-between": "never"
+      }
+    ],
+    "no-duplicate-imports": "error",
+    "no-dupe-keys": "error",
+    "no-dupe-args": "error",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ]
+  }
 }

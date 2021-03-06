@@ -3,5 +3,3 @@ export interface IResponse<T> {
   errorMessage?: string,
   data: T,
 }
-
-export type IResponsePromise<T> = Promise<IResponse<T>>

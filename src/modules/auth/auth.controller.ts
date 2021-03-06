@@ -1,17 +1,22 @@
 import { AuthGuard } from '@nestjs/passport';
 import {
-  Controller, Post, Body, ValidationPipe, Get, Query, UseGuards,
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  Get,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { ResultOutput } from '../../utils/response';
-import { IResponsePromise } from '../../types';
-import { GetUser } from '../../components/decorators/get-user.decorator';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { SignInDto } from './dto/signin.dto';
+import { GetUser } from '../../common/decorators/get-user.decorator';
+import { GetToken } from '../../common/decorators/get-token.decarator';
+import { SingUpAuthDto } from './dto/sing-up-auth.dto';
+import { ConfirmAccountAuthDto } from './dto/confirm-account-auth.dto';
+import { ForgotPasswordAuthDto } from './dto/forgot-password-auth.dto';
+import { ChangePasswordAuthDto } from './dto/change-password-auth.dto';
+import { SignInAuthDto } from './dto/sign-in-auth.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -20,39 +25,49 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('/confirm')
-  async confirm(
-    @Query(new ValidationPipe()) query: ConfirmAccountDto,
-  ): IResponsePromise<IReadableUser> {
-    const result = await this.authService.confirm(query.token);
-    return ResultOutput.success(result);
+  confirm(
+    @Query(new ValidationPipe()) query: ConfirmAccountAuthDto,
+  ): Promise<IReadableUser> {
+    return this.authService.confirm(query.token);
+  }
+
+  @Post('/logout')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  logout(
+    @GetToken() token: string,
+  ): Promise<boolean> {
+    return this.authService.logout(token);
   }
 
   @Post('/signUp')
-  async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): IResponsePromise<boolean> {
-    const result = await this.authService.signUp(createUserDto);
-    return ResultOutput.success(result);
+  signUp(
+    @Body(new ValidationPipe()) createUserDto: SingUpAuthDto,
+  ): Promise<boolean> {
+    return this.authService.signUp(createUserDto);
   }
 
   @Post('/signIn')
-  async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IReadableUser> {
-    const result = await this.authService.signIn(signInDto);
-    return ResultOutput.success(result);
+  signIn(
+    @Body(new ValidationPipe()) signInDto: SignInAuthDto,
+  ): Promise<IReadableUser> {
+    return this.authService.signIn(signInDto);
   }
 
   @Post('/forgotPassword')
-  async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto): Promise<boolean> {
-    const result = await this.authService.forgotPassword(forgotPasswordDto);
-    return ResultOutput.success(result);
+  forgotPassword(
+    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordAuthDto,
+  ): Promise<boolean> {
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('/changePassword')
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  async changePassword(
+  changePassword(
     @GetUser() user: IUserAuth,
-    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
+    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordAuthDto,
   ): Promise<boolean> {
-    const result = await this.authService.changePassword(user.id, changePasswordDto);
-    return ResultOutput.success(result);
+    return this.authService.changePassword(user.id, changePasswordDto);
   }
 }

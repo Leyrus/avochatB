@@ -1,7 +1,7 @@
 import { IsString, Matches, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ChangePasswordDto {
+export class ChangePasswordAuthDto {
   @IsString()
   @ApiProperty()
   @Matches(
