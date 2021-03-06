@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import { NestFactory } from '@nestjs/core';
 import * as helmet from 'helmet';
-// import * as csurf from 'csurf';
 import * as rateLimit from 'express-rate-limit';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -26,9 +25,6 @@ async function bootstrap() {
  });
  app.use(helmet());
 
- // app.use(csurf());
-
- // const { httpAdapter } = app.get(HttpAdapterHost);
  app.setGlobalPrefix(`api/v${config.apiVersion}`);
  app.useGlobalFilters(new AllExceptionsFilter());
  app.useGlobalInterceptors(new TransformInterceptor());
