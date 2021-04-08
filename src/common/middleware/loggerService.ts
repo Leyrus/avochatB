@@ -12,11 +12,11 @@ export class CustomLogger implements LoggerService {
 
   private saveLog = (message, context) => {
     const logMessage = `${new Date().toString().substr(4, 20)} - [${context}]: ${message}\n`;
-    fs.appendFile(this.getLogsFile(), logMessage, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+    // fs.appendFile(this.getLogsFile(), logMessage, (err) => {
+    //   if (err) {
+    //     throw err;
+    //   }
+    // });
   };
 
   private toJSON = (message) => JSON.stringify(message)
