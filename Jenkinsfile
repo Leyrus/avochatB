@@ -7,7 +7,6 @@ pipeline {
         echo 'Building..'
         sh 'ls -a'
         sh 'pwd'
-        sh 'npm i -g yarn'
         sh 'yarn install';
         sh 'yarn run build'
       }
