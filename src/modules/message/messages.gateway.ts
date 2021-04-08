@@ -11,7 +11,7 @@ import { Socket, Server } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { IDeleteMessageRes, IMessage } from './interfaces/message';
 
-@WebSocketGateway(4001)
+@WebSocketGateway(1214)
 export class MessagesGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private userService: UserService) {}
 
