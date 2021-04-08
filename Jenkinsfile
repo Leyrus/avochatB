@@ -9,12 +9,13 @@ pipeline {
         sh 'node -v'
         sh 'pwd'
         sh 'npm install';
+        sh 'npm run build'
       }
     }
     stage('Deploy') {
       steps {
         echo 'Deploying...'
-        sh 'npm run start:prod'
+        sh 'pm2 start dist/main'
       }
     }
   }
