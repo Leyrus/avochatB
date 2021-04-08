@@ -9,19 +9,19 @@ import { AllExceptionsFilter } from './common/exceptions/all-exeptions.filter';
 import { config, isProd } from './config';
 import { TransformInterceptor } from './common/interceptors/transform-interceptor';
 
-const getHttpsOptions = () =>
- isProd
-  ? {
-     key: fs.readFileSync(config.privateKeyPath),
-     cert: fs.readFileSync(config.publicKeyPath),
-    }
-  : null;
+// const getHttpsOptions = () =>
+//  isProd
+//   ? {
+//      key: fs.readFileSync(config.privateKeyPath),
+//      cert: fs.readFileSync(config.publicKeyPath),
+//     }
+//   : null;
 
 async function bootstrap() {
  const app = await NestFactory.create(AppModule, {
   cors: true,
   logger: new CustomLogger(),
-  httpsOptions: getHttpsOptions(),
+  // httpsOptions: getHttpsOptions(),
  });
  app.use(helmet());
 
