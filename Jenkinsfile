@@ -7,8 +7,8 @@ pipeline {
         echo 'Building..'
         sh 'ls -a'
         sh 'pwd'
-        sh 'yarn install';
-        sh 'yarn run build'
+        sh 'npm install';
+        sh 'npm run build'
       }
     }
     stage('Deploy') {
