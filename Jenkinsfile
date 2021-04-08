@@ -6,6 +6,7 @@ pipeline {
       steps {
         echo 'Building..'
         sh 'ls -a'
+        sh 'node -v'
         sh 'pwd'
         sh 'npm install';
         sh 'npm run build'
