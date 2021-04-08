@@ -7,16 +7,14 @@ pipeline {
         echo 'Building..'
         sh 'ls -a'
         sh 'pwd'
-      }
-    }
-    stage('Test') {
-      steps {
-        echo 'Testing...'
+        sh 'yarn install';
+        sh 'yarn run build'
       }
     }
     stage('Deploy') {
       steps {
         echo 'Deploying...'
+        sh 'cp -r dist/* /var/www/chat.d.ledev.ru/back/'
       }
     }
   }
