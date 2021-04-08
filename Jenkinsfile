@@ -15,7 +15,7 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploying...'
-        sh 'pm2 start dist/main.js'
+        sh 'pm2 restart dist/main.js'
       }
     }
   }
