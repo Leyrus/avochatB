@@ -5,9 +5,6 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Building...'
-        sh 'ls -a'
-        sh 'node -v'
-        sh 'pwd'
         sh 'npm install';
         sh 'npm run build'
       }
@@ -15,6 +12,7 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploying...'
+        sh 'pwd'
         sh 'pm2 restart dist/main.js'
       }
     }
