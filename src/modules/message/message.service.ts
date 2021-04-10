@@ -3,6 +3,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Crypto } from '../../utils/crypto';
 import { UserEntity } from '../user/entities/user.entity';
+import { ChatEntity } from '../chat/entities/chat.entity';
+import { ChatService } from '../chat/chat.service';
 import { MessageEntity } from './entities/message.entity';
 import { createMessage } from './utils';
 import { EditMessageDTO } from './dto/edit-message.dto';
@@ -18,28 +20,41 @@ export class MessageService {
     private messagesRepository: Repository<MessageEntity>,
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(ChatEntity)
+    private chatsRepository: Repository<ChatEntity>,
     private messageGateway: MessagesGateway,
+    private chatService: ChatService,
   ) {}
 
-  async getMessages(chatId: number): Promise<IMessage[]> {
-    const users = await this.usersRepository.find({
-      relations: ['chats'],
-    });
+  async getMessages({
+    userId,
+    chatId,
+    offset,
+    limit,
+  }): Promise<IMessage[]> {
+    const chatParticipants = await this.chatService.getParticipants(chatId);
+    const hasChat = chatParticipants.some(participant => participant.id === userId);
 
-    if (!users) {
-      throw new BadRequestException('Users not found');
+    if (!hasChat) {
+      throw new BadRequestException('The user is not a participant of this chat');
     }
 
-    const chatUsers = users
-      .filter(user => user.chats.find(chat => chat.id === +chatId));
-    const messages = await this.messagesRepository.find({ chatId });
+    const messages = await this.messagesRepository
+      .createQueryBuilder()
+      .select('messages')
+      .from(MessageEntity, 'messages')
+      .where('messages.chatId = :chatId', { chatId })
+      .limit(limit)
+      .offset(offset)
+      .getMany()
+    ;
 
     if (!messages) {
       throw new BadRequestException('Messages not found');
     }
 
     return messages.map(message => {
-      const user = chatUsers.find(user => user.id === message.userId);
+      const user = chatParticipants.find(user => user.id === message.userId);
 
       return createMessage(message, user);
     });
@@ -49,10 +64,6 @@ export class MessageService {
     const user = await this.usersRepository.findOne({
       id: userId,
     });
-
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
 
     const message = await this.messagesRepository
       .save({

@@ -18,10 +18,20 @@ export class MessageController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiQuery({ name: 'chatId', type: 'number', required: true })
+  @ApiQuery({ name: 'limit', type: 'number', required: false })
+  @ApiQuery({ name: 'offset', type: 'number', required: false })
   getMessage(
     @Query('chatId') chatId,
+    @Query('limit') limit,
+    @Query('offset') offset,
+    @GetUser() user: IUserAuth,
   ): Promise<IMessage[]> {
-    return this.messageService.getMessages(chatId);
+    return this.messageService.getMessages({
+      userId: user.id,
+      chatId,
+      offset,
+      limit,
+    });
   }
 
   @Post('send')
