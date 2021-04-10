@@ -26,6 +26,8 @@ export interface IUserAuth {
 }
 
 export interface IReadableUser {
+  id: number
+  login: string,
   email: string;
   status: string;
   name: string | null;

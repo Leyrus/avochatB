@@ -7,8 +7,10 @@ import {
   Get,
   Query,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
 import { GetUser } from '../../common/decorators/get-user.decorator';
 import { GetToken } from '../../common/decorators/get-token.decarator';
@@ -48,10 +50,17 @@ export class AuthController {
   }
 
   @Post('/signIn')
-  signIn(
+  async signIn(
     @Body(new ValidationPipe()) signInDto: SignInAuthDto,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<IReadableUser> {
-    return this.authService.signIn(signInDto);
+    const result = await this.authService.signIn(signInDto);
+
+    // TODO AV-167
+    // response.cookie('Authentication', `Bearer ${result.accessToken}`);
+    // delete result.accessToken;
+
+    return result;
   }
 
   @Post('/forgotPassword')
