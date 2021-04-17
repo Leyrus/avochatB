@@ -7,6 +7,9 @@ export class CreateUserTokenDto {
   @IsString()
   token: string;
 
+  @IsString()
+  refreshToken: string;
+
   @IsDateString()
   expireAt: string;
 }

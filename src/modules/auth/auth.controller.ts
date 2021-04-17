@@ -20,6 +20,7 @@ import { ForgotPasswordAuthDto } from './dto/forgot-password-auth.dto';
 import { ChangePasswordAuthDto } from './dto/change-password-auth.dto';
 import { SignInAuthDto } from './dto/sign-in-auth.dto';
 import { AuthService } from './auth.service';
+import { RefreshTokenDTO } from './dto/refreshToken';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -31,6 +32,14 @@ export class AuthController {
     @Query(new ValidationPipe()) query: ConfirmAccountAuthDto,
   ): Promise<IReadableUser> {
     return this.authService.confirm(query.token);
+  }
+
+  @Post('/refreshToken')
+  @ApiBearerAuth()
+  refreshToken(
+    @Body(new ValidationPipe()) body: RefreshTokenDTO,
+  ): Promise<IReadableUser> {
+    return this.authService.refreshToken(body.refreshToken);
   }
 
   @Post('/logout')
