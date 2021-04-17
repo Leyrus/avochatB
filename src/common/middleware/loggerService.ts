@@ -34,7 +34,6 @@ export class CustomLogger implements LoggerService {
 
   error(message: any, trace?: string, context?: string): any {
     message = this.toJSON(message);
-    console.log(trace, 'myLog trace');
     this.saveLog(message, context);
     console.log(`\x1b[35m ${new Date().toISOString()}\x1b[31m - [${context}]: \x1b[31m${message}`);
   }

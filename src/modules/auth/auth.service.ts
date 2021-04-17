@@ -3,7 +3,8 @@ import { Repository } from 'typeorm';
 import * as moment from 'moment';
 import { SignOptions } from 'jsonwebtoken';
 import {
-  BadRequestException, forwardRef,
+  BadRequestException,
+  forwardRef,
   Inject,
   Injectable,
   MethodNotAllowedException,
@@ -11,16 +12,18 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { isEmail } from 'class-validator';
+import { v4 as uuidv4 } from 'uuid';
 import { UserService } from '../user/user.service';
 import { TokenService } from '../token/token.service';
 import { CreateUserTokenDto } from '../token/dto/create-user-token.dto';
-import { IUser, IReadableUser } from '../user/interfaces/user.interface';
+import { IReadableUser, IUser } from '../user/interfaces/user.interface';
 import { MailService } from '../mail/mail.service';
 import { statusEnum } from '../user/enums/status.enum';
 import { userSensitiveFieldsEnum } from '../user/enums/protected-fields.enum';
 import { config } from '../../config';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { UserEntity } from '../user/entities/user.entity';
+import { TokenEntity } from '../token/entities/token.entity';
 import { SingUpAuthDto } from './dto/sing-up-auth.dto';
 import { ITokenPayload } from './interfaces/token-payload.interface';
 import { SignInAuthDto } from './dto/sign-in-auth.dto';
@@ -60,7 +63,9 @@ export class AuthService {
     }
   }
 
-  async signIn(signInDto: SignInAuthDto, checkPassword = true): Promise<IReadableUser> {
+  async signIn(
+    signInDto: SignInAuthDto, checkPassword = true,
+  ): Promise<IReadableUser> {
     const { login, password } = signInDto;
     const user = isEmail(login)
       ? await this.userService.findByEmail(login, true)
@@ -72,7 +77,8 @@ export class AuthService {
 
     const token = await this.signUser(user);
     const readableUser = user as IReadableUser;
-    readableUser.accessToken = token;
+    readableUser.accessToken = token.token;
+    readableUser.refreshToken = token.refreshToken;
 
     return _.omit<IReadableUser>(
       readableUser,
@@ -80,7 +86,9 @@ export class AuthService {
     ) as IReadableUser;
   }
 
-  async signUser(user: IUser, withStatusCheck = true): Promise<string> {
+  async signUser(
+    user: IUser, withStatusCheck = true,
+  ): Promise<TokenEntity> {
     if (withStatusCheck && (user.status !== statusEnum.active)) {
       throw new MethodNotAllowedException();
     }
@@ -95,13 +103,12 @@ export class AuthService {
       .add(1, 'day')
       .toISOString();
 
-    await this.saveToken({
+    return await this.saveToken({
       token,
       expireAt,
+      refreshToken: uuidv4(),
       userId: user.id,
     });
-
-    return token;
   }
 
   async changePassword(userId: number, changePasswordDto: ChangePasswordAuthDto): Promise<boolean> {
@@ -113,6 +120,21 @@ export class AuthService {
     await this.userService.updatePassword(userId, newPassword);
     await this.tokenService.deleteAll(userId);
     return true;
+  }
+
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<IReadableUser> {
+    const token = await this.tokenService.findByRefreshToken(refreshToken);
+    const user = await this.userService.findById(token.userId);
+    const readableUser = user as IReadableUser;
+    readableUser.accessToken = token.token;
+    readableUser.refreshToken = token.refreshToken;
+
+    return _.omit<IReadableUser>(
+      readableUser,
+      Object.values(userSensitiveFieldsEnum),
+    ) as IReadableUser;
   }
 
   async confirm(token: string): Promise<IReadableUser> {
@@ -170,9 +192,10 @@ export class AuthService {
     throw new UnauthorizedException();
   }
 
-  private async saveToken(createUserTokenDto: CreateUserTokenDto): Promise<boolean> {
-    await this.tokenService.create(createUserTokenDto);
-    return true;
+  private async saveToken(
+    createUserTokenDto: CreateUserTokenDto,
+  ): Promise<TokenEntity> {
+    return await this.tokenService.create(createUserTokenDto);
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordAuthDto): Promise<boolean> {

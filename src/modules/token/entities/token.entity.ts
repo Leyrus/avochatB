@@ -9,6 +9,9 @@ export class TokenEntity extends AbstractEntity {
   @Column()
   token: string;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
   @Column()
   expireAt: string;
 }

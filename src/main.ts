@@ -1,7 +1,6 @@
-// import * as fs from 'fs';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
-import * as helmet from 'helmet';
+// import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -24,7 +23,7 @@ async function bootstrap() {
     logger: new CustomLogger(),
     // httpsOptions: getHttpsOptions(),
   });
-  app.use(helmet());
+  // app.use(helmet());
 
   app.setGlobalPrefix(`api/v${config.apiVersion}`);
   app.useGlobalFilters(new AllExceptionsFilter());

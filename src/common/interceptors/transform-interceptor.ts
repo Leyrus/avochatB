@@ -11,12 +11,23 @@ import { IResponse } from '../../types';
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
-  intercept(
+  async intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<IResponse<T>> {
+  ): Promise<Observable<IResponse<T>>> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest();
+
+    if (process.env.TIMEOUT_API) {
+      const promise = new Promise((res) => {
+        setTimeout(res, +process.env.TIMEOUT_API);
+      });
+      return await promise.then(() => next.handle().pipe(
+        map(data => ResultOutput.success(
+          200, request.url, data,
+        )),
+      ));
+    }
 
     return next.handle().pipe(
       map(data => ResultOutput.success(

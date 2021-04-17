@@ -34,6 +34,7 @@ export interface IReadableUser {
   roles: string;
   chats?: IChat[],
   accessToken?: string;
+  refreshToken?: string;
   socketClientId?: string,
   isOnline?: boolean,
 }

@@ -11,10 +11,8 @@ export class TokenService {
     private tokensRepository: Repository<TokenEntity>,
   ) {}
 
-  async create(createUserTokenDto: CreateUserTokenDto): Promise<boolean> {
-    await this.tokensRepository
-      .save(createUserTokenDto);
-    return true;
+  async create(createUserTokenDto: CreateUserTokenDto): Promise<TokenEntity> {
+    return this.tokensRepository.save(createUserTokenDto);
   }
 
   async delete(userId: number, token: string): Promise<boolean> {
@@ -33,5 +31,10 @@ export class TokenService {
     const userToken = await this.tokensRepository
       .findOne({ userId, token });
     return !!userToken;
+  }
+
+  async findByRefreshToken(refreshToken): Promise<TokenEntity> {
+    return await this.tokensRepository
+      .findOne({ refreshToken });
   }
 }
