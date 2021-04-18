@@ -1,14 +1,5 @@
 import { AuthGuard } from '@nestjs/passport';
-import {
-  Controller,
-  Post,
-  Body,
-  ValidationPipe,
-  Get,
-  Query,
-  UseGuards,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
@@ -35,7 +26,6 @@ export class AuthController {
   }
 
   @Post('/refreshToken')
-  @ApiBearerAuth()
   refreshToken(
     @Body(new ValidationPipe()) body: RefreshTokenDTO,
   ): Promise<IReadableUser> {
@@ -63,13 +53,7 @@ export class AuthController {
     @Body(new ValidationPipe()) signInDto: SignInAuthDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<IReadableUser> {
-    const result = await this.authService.signIn(signInDto);
-
-    // TODO AV-167
-    // response.cookie('Authentication', `Bearer ${result.accessToken}`);
-    // delete result.accessToken;
-
-    return result;
+    return await this.authService.signIn(signInDto, true);
   }
 
   @Post('/forgotPassword')

@@ -100,7 +100,7 @@ export class AuthService {
     const token = await this.generateToken(tokenPayload);
 
     const expireAt = moment()
-      .add(1, 'day')
+      .add(30, 'seconds')
       .toISOString();
 
     return await this.saveToken({
@@ -128,8 +128,13 @@ export class AuthService {
     const token = await this.tokenService.findByRefreshToken(refreshToken);
     const user = await this.userService.findById(token.userId);
     const readableUser = user as IReadableUser;
-    readableUser.accessToken = token.token;
-    readableUser.refreshToken = token.refreshToken;
+    const newToken = await this.signUser(user, false);
+
+    readableUser.accessToken = newToken.token;
+    readableUser.refreshToken = newToken.refreshToken;
+
+    const tokenData = await this.verifyToken(token.token);
+    await this.tokenService.delete(tokenData.id, token.token);
 
     return _.omit<IReadableUser>(
       readableUser,
@@ -167,9 +172,10 @@ export class AuthService {
       to: [user.email],
       subject: 'Verify User',
       html: `
-                <h3>Hello ${user.name || user.login}!</h3>
-                <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
-            `,
+        <h3>Hello ${user.name || user.login}!</h3>
+        <p>Please use this <a href="${confirmLink}">link</a>
+         to confirm your account.</p>
+      `,
     });
     return true;
   }
@@ -178,7 +184,7 @@ export class AuthService {
     return this.jwtService.sign(data, options);
   }
 
-  private async verifyToken(token): Promise<ITokenPayload> {
+  private async verifyToken(token: string): Promise<ITokenPayload> {
     try {
       const data = this.jwtService.verify(token) as ITokenPayload;
       const tokenExists = await this.tokenService.exists(data.id, token);

@@ -15,6 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // говорим что хотим получать поле из хедера
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // получение токена из кук
+      // jwtFromRequest: ExtractJwt.fromExtractors([(
+      //   request: Request,
+      // ) => request.cookies.Authentication]),
       secretOrKey: config.jwtSecret,
       passReqToCallback: true,
     });
