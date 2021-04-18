@@ -6,15 +6,18 @@ import { UserEntity } from '../user/entities/user.entity';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { ChatEntity } from './entities/chat.entity';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, ChatEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      ChatEntity,
+    ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     forwardRef(() => AuthModule),
   ],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, ChatGateway],
 })
-export class ChatModule {
-}
+export class ChatModule {}

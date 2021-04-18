@@ -10,14 +10,16 @@ import { DeleteChatDTO } from './dto/delete-chat.dto';
 import { EditChatDTO } from './dto/edit-chat.dto';
 import { AddParticipantChatDto } from './dto/add-participant-chat.dto';
 import { DeleteParticipantChatDto } from './dto/delete-participant-chat.dto';
+import { ChatGateway } from './chat.gateway';
 
 @Injectable()
 export class ChatService {
   constructor(
-    @InjectRepository(ChatEntity)
-    private chatsRepository: Repository<ChatEntity>,
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(ChatEntity)
+    private chatsRepository: Repository<ChatEntity>,
+    private chatGateway: ChatGateway,
   ) {}
 
   async getParticipants(chatId: number): Promise<IReadableUser[]> {
@@ -54,6 +56,7 @@ export class ChatService {
       ...user,
       chats: [...user.chats, newChat],
     });
+    this.chatGateway.createChat(null, newChat);
 
     return newChat;
   }
@@ -69,8 +72,10 @@ export class ChatService {
     if (result.affected === 0) {
       throw new BadRequestException('Chat with this id was not found');
     }
+    const deletedChat = { deletedChatId: body.chatId };
+    this.chatGateway.deleteChat(null, deletedChat);
 
-    return { deletedChatId: body.chatId };
+    return deletedChat;
   }
 
   async editChat(body: EditChatDTO): Promise<IChat> {
@@ -79,7 +84,9 @@ export class ChatService {
       .update(
         { id: chatId }, { name: newName },
       );
-    return await this.chatsRepository.findOne({ id: chatId });
+    const updatedChat = await this.chatsRepository.findOne({ id: chatId });
+    this.chatGateway.editChat(null, updatedChat);
+    return updatedChat;
   }
 
   async addParticipantToChat(body: AddParticipantChatDto) {
@@ -104,10 +111,14 @@ export class ChatService {
       chats: [...user.chats, chat],
     });
 
-    return {
+    const newParticipant = {
       addedChatId: chat.id,
       addedUserId: user.id,
     };
+
+    this.chatGateway.addUserToChat(null, newParticipant);
+
+    return newParticipant;
   }
 
   async deleteParticipantFromChat(body: DeleteParticipantChatDto) {
@@ -131,10 +142,13 @@ export class ChatService {
       chats: user.chats
         .filter(innerChat => innerChat.id !== chat.id),
     });
-    return {
+    const deletedParticipant = {
       deletedChatId: chat.id,
       deletedUserId: user.id,
     };
+    this.chatGateway.deleteUserFromChat(null, deletedParticipant);
+
+    return deletedParticipant;
   }
 }
 
