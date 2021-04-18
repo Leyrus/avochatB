@@ -16,12 +16,6 @@ export class ChatGateway {
 
   private logger: Logger = new Logger('ChatGateway');
 
-  @SubscribeMessage('createChat')
-  createChat(client: Socket, payload: IChat): void {
-    this.logger.log(`createChat ${JSON.stringify(payload)}`);
-    this.server.emit('createChat', { body: payload });
-  }
-
   @SubscribeMessage('deleteChat')
   deleteChat(client: Socket, payload: IDeleteChatRes): void {
     this.logger.log(`createChat ${JSON.stringify(payload)}`);

@@ -56,7 +56,6 @@ export class ChatService {
       ...user,
       chats: [...user.chats, newChat],
     });
-    this.chatGateway.createChat(null, newChat);
 
     return newChat;
   }
