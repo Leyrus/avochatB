@@ -165,7 +165,7 @@ export class AuthService {
 
   async sendConfirmation(user: UserEntity): Promise<boolean> {
     const token = await this.signUser(user, false);
-    const confirmLink = `${this.clientAppUrl}/confirm?token=${token}`;
+    const confirmLink = `${this.clientAppUrl}/confirm?token=${token.token}`;
 
     await this.mailService.send({
       from: `Excited User <${config.jsCodeMail}>`,
