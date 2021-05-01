@@ -33,7 +33,7 @@ export class MessageService {
     limit,
   }): Promise<IMessage[]> {
     const chatParticipants = await this.chatService.getParticipants(chatId);
-    const hasChat = chatParticipants.some(participant => participant.id === userId);
+    const hasChat = chatParticipants.usersList.some(participant => participant.id === userId);
 
     if (!hasChat) {
       throw new BadRequestException('The user is not a participant of this chat');
@@ -54,7 +54,7 @@ export class MessageService {
     }
 
     return messages.map(message => {
-      const user = chatParticipants.find(user => user.id === message.userId);
+      const user = chatParticipants.usersList.find(user => user.id === message.userId);
 
       return createMessage(message, user);
     });

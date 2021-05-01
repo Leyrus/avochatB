@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
-import { IReadableUser } from '../user/interfaces/user.interface';
+import { IReadableUser, IReadableUserResponse } from '../user/interfaces/user.interface';
 import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import { IChat, IDeleteChatRes } from './interfaces/chat.interface';
@@ -22,22 +22,23 @@ export class ChatService {
     private chatGateway: ChatGateway,
   ) {}
 
-  async getParticipants(chatId: number): Promise<IReadableUser[]> {
+  async getParticipants(chatId: number): Promise<IReadableUserResponse> {
     const chat = await this.chatsRepository.findOne({
       id: chatId,
     },{
       relations: ['users'],
     });
     if(!chat) {
-      throw new BadRequestException('Chat not found');
+      throw new BadRequestException('Chat is not found');
     }
-    return chat.users.map(user => {
-      user.isOnline = !!user.socketClientId;
-      delete user.socketClientId;
-      delete user.password;
+    const usersList = chat.users.map(user => {
+          user.isOnline = !!user.socketClientId;
+          delete user.socketClientId;
+          delete user.password;
 
-      return user;
-    });
+          return user;
+        });
+    return { usersList };
   }
 
   async createChat(body: CreateChatDTO, userId: number): Promise<IChat> {

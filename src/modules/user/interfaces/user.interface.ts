@@ -39,6 +39,10 @@ export interface IReadableUser {
   isOnline?: boolean,
 }
 
+export interface IReadableUserResponse {
+  usersList: IReadableUser[],
+}
+
 export interface IUserResponse {
   email: string;
   username?: string;

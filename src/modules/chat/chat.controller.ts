@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../common/decorators/get-user.decorator';
-import { IReadableUser, IUserAuth } from '../user/interfaces/user.interface';
+import { IReadableUserResponse, IUserAuth } from '../user/interfaces/user.interface';
 import { ChatService } from './chat.service';
 import { CreateChatDTO } from './dto/create-chat.dto';
 import {
@@ -24,7 +24,7 @@ export class ChatController {
   @ApiQuery({ name: 'chatId', type: 'number', required: true })
   getParticipants(
     @Query('chatId') chatId,
-  ): Promise<IReadableUser[]> {
+  ): Promise<IReadableUserResponse> {
     return this.chatService.getParticipants(chatId);
   }
 
